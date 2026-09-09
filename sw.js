@@ -1,16 +1,13 @@
 // Service worker CFL Facturation — network-first pour le squelette de l'app,
 // avec repli sur le cache si le réseau est coupé (usage hors-ligne).
 // Incrémenter CACHE_VERSION à chaque mise à jour des fichiers pour forcer le rafraîchissement.
-const CACHE_VERSION = "cfl-v4";
+const CACHE_VERSION = "cfl-v5";
 const SHELL_FILES = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
-  "./icon-512.png",
-  "./logo.png",
-  "./supabase.min.js",
-  "./chart.min.js"
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", event => {
