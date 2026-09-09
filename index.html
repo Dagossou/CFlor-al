@@ -74,10 +74,8 @@ body { min-height:100vh; }
   border-radius:var(--radius); padding:20px 14px; display:flex; flex-direction:column; gap:4px;
   min-height:calc(100vh - 36px); box-shadow:var(--shadow-lg); color:#fff; animation:fadeIn .4s ease;
 }
-.sidebar-brand { display:flex; align-items:center; gap:11px; padding:2px 10px 18px; border-bottom:1px solid rgba(255,255,255,.14); margin-bottom:10px; }
-.sidebar-brand img { height:36px; width:auto; filter:brightness(0) invert(1); opacity:.96; }
-.sidebar-brand .sidebar-title { font-weight:800; font-size:13.5px; line-height:1.35; color:#fff; }
-.sidebar-brand .sidebar-title small { display:block; font-weight:600; font-size:10.5px; color:rgba(255,255,255,.55); letter-spacing:.2px; margin-top:2px; }
+.sidebar-brand { display:flex; align-items:center; justify-content:center; padding:6px 10px 20px; border-bottom:1px solid rgba(255,255,255,.14); margin-bottom:10px; }
+.sidebar-brand img { height:56px; width:auto; filter:brightness(0) invert(1); opacity:.97; }
 .nav-item {
   display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:transparent; color:rgba(255,255,255,.7);
   border:0; box-shadow:none; padding:11px 12px; min-height:44px; border-radius:12px; font-weight:700; font-size:14px;
@@ -173,11 +171,20 @@ th:first-child { border-top-left-radius:10px; }
 th:last-child { border-top-right-radius:10px; }
 td { border-bottom:1px solid var(--border); padding:0; vertical-align:middle; position:relative; transition:background .3s; }
 tr.row-flash { animation:flashRow 1s ease; }
-td.desc { width:48%; background:var(--cream); overflow:visible; }
-td.qty { width:12%; background:var(--cream); }
-td.price,td.amount { width:20%; background:#f6f9f7; }
+td.desc { width:42%; background:var(--cream); overflow:visible; }
+td.qty { width:11%; background:var(--cream); }
+td.price { width:17%; background:#f6f9f7; }
+td.amount { width:20%; background:#f6f9f7; }
+td.actions-col { width:10%; background:var(--cream); text-align:center; }
 td input { border:0; border-radius:0; background:transparent; min-height:48px; }
 td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff; }
+.row-delete {
+  background:transparent; color:var(--bad); box-shadow:none; border:0; padding:8px; min-height:auto;
+  border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+}
+.row-delete:hover { background:var(--bad-bg); }
+.row-delete svg { width:16px; height:16px; }
+.auto-field { background:var(--brand-lighter)!important; color:var(--brand-dark); font-weight:700; cursor:default; }
 .money { text-align:right; padding-right:14px; font-weight:700; font-variant-numeric:tabular-nums; }
 .suggestions {
   display:none; position:absolute; z-index:5000; left:0; right:0; top:calc(100% + 6px);
@@ -322,7 +329,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
     flex-direction:row; flex-wrap:wrap; align-items:center; padding:10px 10px; border-radius:14px; z-index:1000; gap:6px;
   }
   .sidebar-brand { padding:0 10px 0 0; border-bottom:0; margin-bottom:0; border-right:1px solid rgba(255,255,255,.14); margin-right:2px; }
-  .sidebar-brand .sidebar-title small { display:none; }
+  .sidebar-brand img { height:32px; }
   .nav-item { width:auto; padding:9px 11px; }
   .nav-item span { display:none; }
   .sidebar-footer { margin-top:0; margin-left:auto; flex-direction:row; border-top:0; padding-top:0; align-items:center; gap:6px; }
@@ -359,23 +366,42 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .chart-card .chart-wrap { height:220px; }
 }
 @media print {
-  @page { size:A4 portrait; margin:8mm; }
+  @page { size:A4 portrait; margin:10mm 12mm; }
   html,body { background:white; }
-  .shell { display:block; max-width:none; padding:0; }
+  .shell { display:block; max-width:none; padding:0; margin:0; }
+  .main { width:100%; }
   .app { max-width:none; padding:0; }
-  .sidebar,.topbar-v2,.footer-note,.help,.modal,.suggestions,#releveView,#statsView,.toast-stack { display:none!important; }
+  .sidebar,.topbar-v2,.footer-note,.help,.modal,.suggestions,#releveView,#statsView,.toast-stack,
+  .emit-wrap,.actions-col,.row-delete { display:none!important; }
   .sheet { box-shadow:none; border-radius:0; border:0; animation:none; }
-  .brand { -webkit-print-color-adjust:exact; print-color-adjust:exact; background:white; }
+  .brand { -webkit-print-color-adjust:exact; print-color-adjust:exact; background:white; padding:0 0 16px; border-bottom:2px solid var(--brand); }
+  .brand img.logo { height:50px; }
+  .brand .brand-text h1 { font-size:18px; }
+  .brand .brand-text .sub { font-size:11px; }
   .section-title,th,.total-label,.total-value { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  input,select,textarea { border:0; padding:4px; min-height:26px; background:transparent!important; box-shadow:none!important; }
-  .invoice-head { padding:12px 10px 6px; }
-  .patient { padding:6px 10px 10px; }
-  .table-wrap { padding:4px 10px 10px; }
-  td input { min-height:30px; }
-  th { padding:8px 5px; }
+  input,select,textarea {
+    border:0; border-bottom:1px solid #d9dfe3; border-radius:0; padding:3px 2px; min-height:22px;
+    background:transparent!important; box-shadow:none!important; color:#111!important; font-weight:600;
+  }
+  .auto-field { color:var(--brand-dark)!important; }
+  .invoice-head { padding:16px 0 6px; grid-template-columns:1fr 280px; }
+  .invoice-head h2 { font-size:24px; }
+  .section-title { margin:12px 0 0; }
+  .patient { padding:10px 0 14px; grid-template-columns:110px 1fr 190px 1fr; }
+  .table-wrap { padding:6px 0 10px; }
+  table { table-layout:fixed; }
+  .table-wrap table th:nth-child(1),.table-wrap table td:nth-child(1) { width:46%!important; }
+  .table-wrap table th:nth-child(2),.table-wrap table td:nth-child(2) { width:12%!important; }
+  .table-wrap table th:nth-child(3),.table-wrap table td:nth-child(3) { width:20%!important; }
+  .table-wrap table th:nth-child(4),.table-wrap table td:nth-child(4) { width:22%!important; }
+  td input { min-height:24px; }
+  th { padding:7px 5px; font-size:11px; }
   .suggestions { display:none!important; }
-  .words { padding:0 10px 12px; }
-  .signatures { padding:12px 10px; }
+  .total-row { padding:6px 0 10px; }
+  .words { padding:6px 0 12px; }
+  .words textarea { border-bottom:0; font-style:italic; }
+  .signatures { padding:16px 0 6px; gap:60px; }
+  tr.print-hide-empty { display:none!important; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
@@ -387,7 +413,6 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   <aside class="sidebar">
     <div class="sidebar-brand">
       <img src="logo.png" alt="Clinique Floréal de Lomé">
-      <div class="sidebar-title">CFL Facturation<small>Clinique Floréal de Lomé</small></div>
     </div>
     <button class="nav-item active" id="tabFacture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg><span>Facturation</span></button>
     <button class="nav-item" id="tabReleve"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Relevé des factures</span></button>
@@ -423,7 +448,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <h2>FACTURE</h2>
       <div class="meta-grid">
         <label for="date">DATE</label><input id="date" type="date">
-        <label for="invoiceNo">N° FACTURE</label><input id="invoiceNo" type="text" inputmode="text">
+        <label for="invoiceNo">N° FACTURE</label><input id="invoiceNo" type="text" inputmode="text" readonly class="auto-field">
       </div>
     </section>
 
@@ -440,7 +465,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 
     <section class="table-wrap">
       <table>
-        <thead><tr><th style="width:48%">Description</th><th style="width:12%">Quantité</th><th style="width:20%">Prix unitaire</th><th style="width:20%">Montant total</th></tr></thead>
+        <thead><tr><th style="width:42%">Description</th><th style="width:11%">Quantité</th><th style="width:17%">Prix unitaire</th><th style="width:20%">Montant total</th><th class="actions-col" style="width:10%"></th></tr></thead>
         <tbody id="lines"></tbody>
       </table>
     </section>
@@ -450,9 +475,9 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
     </div>
 
     <section class="words">
-      <label for="words">MONTANT EN LETTRES (à saisir)</label>
+      <label for="words">MONTANT EN LETTRES</label>
       <div class="stop">Arrêter cette facture à la somme de :</div>
-      <textarea id="words" rows="3"></textarea>
+      <textarea id="words" rows="3" readonly class="auto-field"></textarea>
     </section>
 
     <section class="signatures">
@@ -584,7 +609,7 @@ const STORAGE_KEY = "cfl_facture_current_v2";
 const PENDING_KEY = "cfl_pending_invoices_v2";
 const CONFIG_KEY = "cfl_supabase_config_v2";
 const MAX_SUGGESTIONS = 16;
-let lineCount = 15;
+let lineCount = 5;
 let activeIndex = -1;
 let currentInvoiceId = null;
 
@@ -672,6 +697,17 @@ function todayISO() {
   return new Date(d - tz).toISOString().slice(0,10);
 }
 
+// -------- Numéro de facture automatique --------
+function nextInvoiceNo(dateStr) {
+  const day = (dateStr || todayISO()).replace(/-/g, "");
+  const pending = (typeof getPending === "function") ? getPending() : [];
+  const remote = (typeof releveCache !== "undefined" ? releveCache : []);
+  const remoteIds = new Set(remote.map(r => r.id));
+  const all = remote.concat(pending.filter(p => !remoteIds.has(p.id)));
+  const count = all.filter(r => (r.invoice_date || "").replace(/-/g, "") === day).length;
+  return "CFL-" + day + "-" + String(count + 1).padStart(3, "0");
+}
+
 // -------- Line rendering / autocomplete --------
 function createRow(i, opts) {
   const tr = document.createElement("tr");
@@ -683,7 +719,13 @@ function createRow(i, opts) {
     <td class="qty"><input type="number" class="qtyInput" min="0" value="1" inputmode="numeric"></td>
     <td class="price"><input type="text" class="priceInput money" readonly></td>
     <td class="amount"><input type="text" class="amountInput money" readonly></td>
+    <td class="actions-col"><button type="button" class="row-delete" title="Supprimer la ligne"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td>
   `;
+  tr.querySelector(".row-delete").addEventListener("click", () => {
+    tr.remove();
+    updateTotal();
+    saveStateSoon();
+  });
   bindRow(tr);
   if (opts && opts.flash) {
     tr.classList.add("row-flash");
@@ -767,6 +809,64 @@ function updateRow(tr) {
   updateTotal();
 }
 
+// -------- Nombre en lettres (français) --------
+const NUM_UNITS = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix",
+  "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
+const NUM_TENS = ["", "", "vingt", "trente", "quarante", "cinquante", "soixante", "soixante-dix", "quatre-vingt", "quatre-vingt-dix"];
+
+function numberToWordsFR(n) {
+  n = Math.floor(Math.abs(n));
+  if (n === 0) return "zéro";
+
+  function chunk(num) {
+    // num is 0-999
+    let out = "";
+    const h = Math.floor(num / 100);
+    const rest = num % 100;
+    if (h > 0) out += (h > 1 ? NUM_UNITS[h] + " cent" : "cent") + (h > 1 && rest === 0 ? "s" : "") + (rest > 0 ? " " : "");
+    if (rest > 0) {
+      if (rest < 20) out += NUM_UNITS[rest];
+      else {
+        const t = Math.floor(rest / 10);
+        const u = rest % 10;
+        if (t === 7 || t === 9) {
+          out += NUM_TENS[t - 1] + (u === 1 ? "-et-" : "-") + NUM_UNITS[10 + u];
+        } else {
+          out += NUM_TENS[t] + (u > 0 ? (u === 1 && (t === 2 || t === 3 || t === 4 || t === 5 || t === 6) ? "-et-un" : "-" + NUM_UNITS[u]) : (t === 8 ? "s" : ""));
+        }
+      }
+    }
+    return out;
+  }
+
+  const scales = [
+    { value: 1000000000, singular: "milliard", plural: "milliards" },
+    { value: 1000000, singular: "million", plural: "millions" },
+    { value: 1000, singular: "mille", plural: "mille" }
+  ];
+
+  let remaining = n;
+  const parts = [];
+  scales.forEach(scale => {
+    const count = Math.floor(remaining / scale.value);
+    if (count > 0) {
+      const words = count === 1 && scale.value === 1000 ? "mille" : chunk(count) + " " + (count > 1 ? scale.plural : scale.singular);
+      parts.push(words);
+      remaining -= count * scale.value;
+    }
+  });
+  if (remaining > 0 || parts.length === 0) parts.push(chunk(remaining));
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function amountToWordsFR(amount) {
+  const n = Math.round(Number(amount) || 0);
+  if (n <= 0) return "";
+  const words = numberToWordsFR(n);
+  const capitalized = words.charAt(0).toUpperCase() + words.slice(1);
+  return capitalized + (n > 1 ? " francs CFA" : " franc CFA");
+}
+
 function updateTotal() {
   let total = 0;
   document.querySelectorAll("#lines tr").forEach(tr => {
@@ -774,6 +874,8 @@ function updateTotal() {
     total += Number(amountText || 0);
   });
   document.getElementById("grandTotal").textContent = fmt(total);
+  const wordsEl = document.getElementById("words");
+  if (wordsEl) wordsEl.value = amountToWordsFR(total);
   return total;
 }
 
@@ -841,21 +943,41 @@ function loadState() {
       tr.querySelector(".amountInput").value = fmt(l.amount);
     });
   }
-  while (lineCount < 15) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
+  while (lineCount < 5) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
   if (!document.getElementById("date").value) document.getElementById("date").value = todayISO();
+  if (!document.getElementById("invoiceNo").value) {
+    document.getElementById("invoiceNo").value = nextInvoiceNo(document.getElementById("date").value);
+  }
   updateTotal();
+  saveState();
 }
 
-["invoiceNo","nom","prenom","sexe","age","contact","periode","words","date"].forEach(id => {
+["nom","prenom","sexe","age","contact","periode"].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener("input", saveStateSoon);
   if (el) el.addEventListener("change", saveStateSoon);
+});
+document.getElementById("date").addEventListener("change", () => {
+  if (!currentInvoiceId) {
+    document.getElementById("invoiceNo").value = nextInvoiceNo(document.getElementById("date").value);
+  }
+  saveStateSoon();
 });
 
 document.getElementById("addBtn").addEventListener("click", () => {
   const tr = createRow(lineCount++, { flash:true });
   document.getElementById("lines").appendChild(tr);
   tr.querySelector(".descInput").focus();
+});
+function markEmptyRowsForPrint() {
+  document.querySelectorAll("#lines tr").forEach(tr => {
+    const empty = !tr.querySelector(".descInput").value.trim();
+    tr.classList.toggle("print-hide-empty", empty);
+  });
+}
+window.addEventListener("beforeprint", markEmptyRowsForPrint);
+window.addEventListener("afterprint", () => {
+  document.querySelectorAll("#lines tr.print-hide-empty").forEach(tr => tr.classList.remove("print-hide-empty"));
 });
 document.getElementById("printBtn").addEventListener("click", () => window.print());
 document.getElementById("newBtn").addEventListener("click", async () => {
@@ -1049,7 +1171,7 @@ function reopenInvoice(r) {
     tr.querySelector(".priceInput").value = fmt(l.price);
     tr.querySelector(".amountInput").value = fmt(l.amount);
   });
-  while (lineCount < 15) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
+  while (lineCount < 5) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
   updateTotal();
   saveState();
   switchTab("facture");
