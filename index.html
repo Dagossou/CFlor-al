@@ -40,8 +40,8 @@
   --shadow-sm:0 2px 8px rgba(22,50,79,.06);
   --shadow-md:0 10px 30px rgba(22,50,79,.10);
   --shadow-lg:0 20px 55px rgba(22,50,79,.18);
-  --radius:0;
-  --radius-sm:0;
+  --radius:16px;
+  --radius-sm:10px;
   color-scheme: light;
 }
 * { box-sizing:border-box; }
@@ -71,14 +71,14 @@ body { min-height:100vh; }
 .sidebar {
   width:252px; flex:0 0 252px; position:sticky; top:18px;
   background:#fff; border:1px solid var(--border);
-  border-radius:0; padding:20px 14px; display:flex; flex-direction:column; gap:4px;
+  border-radius:var(--radius); padding:20px 14px; display:flex; flex-direction:column; gap:4px;
   min-height:calc(100vh - 36px); color:var(--ink);
 }
 .sidebar-brand { display:flex; align-items:center; justify-content:center; padding:6px 10px 20px; border-bottom:1px solid var(--border); margin-bottom:10px; }
 .sidebar-brand img { height:52px; width:auto; }
 .nav-item {
   display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:transparent; color:var(--muted);
-  border:0; box-shadow:none; padding:11px 12px; min-height:44px; border-radius:0; font-weight:700; font-size:14px;
+  border:0; box-shadow:none; padding:11px 12px; min-height:44px; border-radius:var(--radius-sm); font-weight:700; font-size:14px;
   transition:background .15s ease, color .15s ease;
 }
 .nav-item svg { width:19px; height:19px; flex:0 0 auto; }
@@ -87,7 +87,7 @@ body { min-height:100vh; }
 .sidebar-footer { margin-top:auto; display:flex; flex-direction:column; gap:6px; padding-top:14px; border-top:1px solid var(--border); }
 .sidebar .status-chip {
   background:var(--bg); color:var(--ink); width:100%; justify-content:flex-start;
-  border-radius:0; padding:10px 12px; border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:10px 12px; border:1px solid var(--border);
 }
 .sidebar .status-chip.off { background:var(--bad-bg); color:var(--bad); border-color:var(--bad); }
 .sidebar .pending-badge { width:100%; justify-content:center; }
@@ -95,7 +95,7 @@ body { min-height:100vh; }
 .topbar-v2 {
   position:sticky; top:18px; z-index:1000; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   padding:14px 20px; background:#fff;
-  border:1px solid rgba(226,232,228,.9); border-radius:0; box-shadow:var(--shadow-sm); margin-bottom:16px;
+  border:1px solid rgba(226,232,228,.9); border-radius:var(--radius); box-shadow:var(--shadow-sm); margin-bottom:16px;
 }
 .topbar-v2 .page-title { font-size:18.5px; font-weight:800; color:var(--ink); margin-right:auto; }
 .topbar-actions { display:flex; gap:10px; flex-wrap:wrap; }
@@ -116,12 +116,12 @@ button.ghost:hover { color:var(--ink); background:rgba(0,0,0,.04); }
 button:disabled { opacity:.55; cursor:default; transform:none; }
 
 .status { margin-left:auto; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); }
-.status-chip { display:flex; align-items:center; gap:7px; background:var(--ok-bg); color:var(--brand-dark); padding:7px 12px; border-radius:0; font-weight:700; transition:background .3s,color .3s; }
+.status-chip { display:flex; align-items:center; gap:7px; background:var(--ok-bg); color:var(--brand-dark); padding:7px 12px; border-radius:999px; font-weight:700; transition:background .3s,color .3s; }
 .status-chip.off { background:var(--bad-bg); color:var(--bad); }
 .dot { width:8px; height:8px; border-radius:50%; background:var(--brand); animation:pulseDot 2s infinite; }
 .dot.off { background:var(--bad); animation:pulseDotBad 2s infinite; }
 .pending-badge {
-  background:var(--warn); color:white; border-radius:0; padding:4px 10px; font-size:12px; font-weight:800;
+  background:var(--warn); color:white; border-radius:999px; padding:4px 10px; font-size:12px; font-weight:800;
   display:flex; align-items:center; gap:6px; animation:popIn .25s ease;
 }
 .sync-spin { width:12px; height:12px; border:2px solid rgba(255,255,255,.5); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
@@ -148,14 +148,14 @@ button:disabled { opacity:.55; cursor:default; transform:none; }
 .meta-grid { display:grid; grid-template-columns:130px 1fr; gap:6px 10px; align-items:center; }
 .meta-grid label { text-align:right; color:var(--brand-dark); font-weight:700; font-size:13px; }
 input,select,textarea {
-  width:100%; border:1.5px solid var(--border); border-radius:0; padding:10px 12px; font-size:15.5px;
+  width:100%; border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; font-size:15.5px;
   background:var(--cream); color:var(--ink); min-height:44px; transition:border-color .2s, box-shadow .2s, background .2s;
   font-family:inherit;
 }
 input:focus,select:focus,textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px rgba(3,188,118,.14); background:#fff; }
 .section-title {
   margin:14px 28px 0; padding:10px 14px; background:var(--brand-light); color:var(--brand-dark);
-  font-weight:800; font-size:13px; letter-spacing:.5px; border-radius:0;
+  font-weight:800; font-size:13px; letter-spacing:.5px; border-radius:var(--radius-sm);
 }
 .patient { display:grid; grid-template-columns:120px 1fr 210px 1fr; gap:9px 12px; padding:14px 28px 20px; align-items:center; }
 .patient label { font-weight:700; font-size:13.5px; color:var(--gray); }
@@ -179,7 +179,7 @@ td input { border:0; border-radius:0; background:transparent; min-height:48px; }
 td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff; }
 .row-delete {
   background:transparent; color:var(--bad); box-shadow:none; border:0; padding:8px; min-height:auto;
-  border-radius:0; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:var(--radius-sm); display:inline-flex; align-items:center; justify-content:center;
 }
 .row-delete:hover { background:var(--bad-bg); }
 .row-delete svg { width:16px; height:16px; }
@@ -188,10 +188,10 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .suggestions {
   display:none; position:absolute; z-index:5000; left:0; right:0; top:calc(100% + 6px);
   max-height:320px; overflow:auto; background:white; border:1px solid var(--border);
-  box-shadow:var(--shadow-lg); border-radius:0; animation:slideUpIn .18s ease; padding:6px;
+  box-shadow:var(--shadow-lg); border-radius:var(--radius); animation:slideUpIn .18s ease; padding:6px;
 }
 .suggestion {
-  padding:11px 13px; border-radius:0; display:flex; justify-content:space-between;
+  padding:11px 13px; border-radius:var(--radius-sm); display:flex; justify-content:space-between;
   gap:12px; align-items:center; cursor:pointer; min-height:44px; transition:background .12s;
 }
 .suggestion:hover,.suggestion.active { background:var(--brand-light); }
@@ -218,7 +218,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   align-items:center; justify-content:center; padding:18px; animation:fadeIn .18s ease;
 }
 .help-card, .modal-card {
-  max-width:640px; width:100%; background:white; border-radius:0; padding:26px; max-height:90vh; overflow:auto;
+  max-width:640px; width:100%; background:white; border-radius:18px; padding:26px; max-height:90vh; overflow:auto;
   box-shadow:var(--shadow-lg); animation:popIn .22s cubic-bezier(.2,.8,.3,1);
 }
 .help-card h3, .modal-card h3 { color:var(--brand-dark); margin-top:0; font-size:19px; }
@@ -232,11 +232,27 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .settings-block .hint { color:var(--muted); font-size:13.5px; margin:0 0 14px; line-height:1.5; }
 .settings-block ol { padding-left:20px; margin:0; }
 .settings-block li { margin-bottom:11px; line-height:1.5; }
+.device-banner {
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 14px;
+  background:var(--info-bg); border:1px solid var(--info); color:var(--ink);
+  padding:12px 16px; border-radius:var(--radius);
+}
+.device-banner svg { color:var(--info); }
+.device-banner span { font-size:13.5px; font-weight:600; flex:1; min-width:220px; }
+.device-banner input { max-width:220px; min-height:38px; }
+.device-banner button { min-height:38px; padding:8px 14px; }
+.devices-list { display:flex; flex-direction:column; gap:8px; }
+.device-row {
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--cream);
+}
+.device-row .device-name { font-weight:700; color:var(--ink); }
+.device-row .device-seen { font-size:12.5px; color:var(--muted); }
 .modal-field label { display:block; font-weight:700; color:var(--brand-dark); margin-bottom:5px; font-size:13.5px; }
 .modal-actions { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
 .releve-summary { display:flex; gap:14px; padding:20px 28px 0; flex-wrap:wrap; }
 .releve-summary .stat {
-  background:var(--brand-lighter); border:1px solid var(--brand-light); border-radius:0; padding:14px 20px;
+  background:var(--brand-lighter); border:1px solid var(--brand-light); border-radius:var(--radius-sm); padding:14px 20px;
   font-weight:800; color:var(--brand-dark); font-size:15px; min-width:150px;
 }
 .releve-summary .stat .stat-label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
@@ -252,12 +268,12 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   font-weight:800; letter-spacing:.4px; text-transform:uppercase;
 }
 .releve-table td { background:var(--cream); border:1px solid var(--border); border-left:0; border-right:0; padding:12px 10px; font-size:14px; }
-.releve-table tr td:first-child { border-left:1px solid var(--border); border-radius:0; }
-.releve-table tr td:last-child { border-right:1px solid var(--border); border-radius:0; }
+.releve-table tr td:first-child { border-left:1px solid var(--border); border-radius:var(--radius-sm) 0 0 var(--radius-sm); }
+.releve-table tr td:last-child { border-right:1px solid var(--border); border-radius:0 var(--radius-sm) var(--radius-sm) 0; }
 .releve-table tr { transition:transform .15s ease; }
 .releve-table tr:hover td { background:var(--brand-lighter); }
 .releve-actions button { padding:7px 12px; min-height:34px; font-size:12.5px; }
-.tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:0; font-size:11px; font-weight:800; }
+.tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; }
 .tag.synced { background:var(--ok-bg); color:var(--brand-dark); }
 .tag.pending { background:var(--warn-bg); color:var(--warn); }
 .tag.paid { background:var(--info-bg); color:var(--info); margin-left:6px; }
@@ -270,19 +286,19 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .period-picker { display:flex; gap:6px; padding:16px 28px 0; flex-wrap:wrap; }
 .period-btn {
   background:#fff; color:var(--muted); border:1px solid var(--border); box-shadow:none;
-  padding:8px 14px; min-height:36px; font-size:13px; font-weight:700; border-radius:0;
+  padding:8px 14px; min-height:36px; font-size:13px; font-weight:700; border-radius:999px;
 }
 .period-btn.active { background:var(--brand); color:#fff; border-color:var(--brand); box-shadow:0 4px 12px rgba(3,188,118,.25); }
 
 .kpi-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; padding:16px 28px 4px; }
 .kpi-card {
   background:linear-gradient(160deg, #fff, var(--brand-lighter)); border:1px solid var(--border);
-  border-radius:0; padding:18px 20px; display:flex; align-items:flex-start; gap:14px;
+  border-radius:var(--radius); padding:18px 20px; display:flex; align-items:flex-start; gap:14px;
   animation:fadeInUp .4s ease; box-shadow:var(--shadow-sm); transition:transform .2s ease, box-shadow .2s ease;
 }
 .kpi-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
 .kpi-icon {
-  width:42px; height:42px; border-radius:0; background:linear-gradient(135deg, var(--brand), var(--brand-dark));
+  width:42px; height:42px; border-radius:var(--radius-sm); background:linear-gradient(135deg, var(--brand), var(--brand-dark));
   color:#fff; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
 }
 .kpi-icon svg { width:21px; height:21px; }
@@ -295,7 +311,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 
 .charts-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:16px; padding:18px 28px 6px; }
 .chart-card {
-  background:#fff; border:1px solid var(--border); border-radius:0; padding:18px 20px 12px;
+  background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px 12px;
   box-shadow:var(--shadow-sm); animation:fadeInUp .45s ease;
 }
 .chart-card h4 { margin:0 0 12px; font-size:13.5px; color:var(--gray); font-weight:800; letter-spacing:.3px; text-transform:uppercase; }
@@ -306,12 +322,12 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .top-row { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
 .top-row:last-child { border-bottom:0; }
 .top-rank {
-  width:26px; height:26px; border-radius:0; background:var(--brand-light); color:var(--brand-dark);
+  width:26px; height:26px; border-radius:var(--radius-sm); background:var(--brand-light); color:var(--brand-dark);
   display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:0 0 auto;
 }
 .top-name { flex:1; font-size:14px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.top-bar-wrap { width:120px; height:7px; background:var(--brand-lighter); border-radius:0; overflow:hidden; flex:0 0 auto; }
-.top-bar { height:100%; background:linear-gradient(90deg, var(--brand), var(--brand-dark)); border-radius:0; transition:width .5s ease; }
+.top-bar-wrap { width:120px; height:7px; background:var(--brand-lighter); border-radius:999px; overflow:hidden; flex:0 0 auto; }
+.top-bar { height:100%; background:linear-gradient(90deg, var(--brand), var(--brand-dark)); border-radius:999px; transition:width .5s ease; }
 .top-amount { width:96px; text-align:right; font-weight:800; color:var(--brand-dark); font-size:13.5px; flex:0 0 auto; }
 
 .toast-stack {
@@ -320,7 +336,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 }
 .toast {
   pointer-events:auto; display:flex; align-items:center; gap:10px; background:#1c2622; color:#fff;
-  padding:13px 18px; border-radius:0; font-size:14px; font-weight:600; box-shadow:var(--shadow-lg);
+  padding:13px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:600; box-shadow:var(--shadow-lg);
   animation:toastIn .25s cubic-bezier(.2,.8,.3,1); width:100%;
 }
 .toast.success { background:linear-gradient(135deg, var(--brand-dark), var(--brand)); }
@@ -333,7 +349,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .shell { flex-direction:column; align-items:stretch; padding:10px 10px 0; gap:10px; }
   .sidebar {
     width:100%; flex:0 0 auto; position:sticky; top:0; min-height:auto;
-    flex-direction:row; flex-wrap:wrap; align-items:center; padding:10px 10px; border-radius:0; z-index:1000; gap:6px;
+    flex-direction:row; flex-wrap:wrap; align-items:center; padding:10px 10px; border-radius:var(--radius); z-index:1000; gap:6px;
   }
   .sidebar-brand { padding:0 10px 0 0; border-bottom:0; margin-bottom:0; border-right:1px solid var(--border); margin-right:2px; }
   .sidebar-brand img { height:32px; }
@@ -350,7 +366,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .topbar-actions > button span { display:inline; }
   html,body { overflow-x:hidden; }
   .app { padding:0 0 20px; }
-  .sheet { border-radius:0; }
+  .sheet { border-radius:var(--radius); }
   .brand { padding:18px 16px; gap:12px; }
   .brand img.logo { height:42px; }
   .brand .brand-text h1 { font-size:16.5px; }
@@ -442,6 +458,12 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       </div>
     </div>
     <div class="app">
+
+  <div class="device-banner" id="deviceBanner" style="display:none;">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Quel est le nom de ce poste ? (ex : Réception, Caisse 1, Labo...)</span>
+    <input id="deviceLabelInput" type="text" placeholder="Nom du poste">
+    <button id="deviceLabelSaveBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Enregistrer</span></button>
+  </div>
 
   <main class="sheet" id="invoice">
     <header class="brand">
@@ -557,30 +579,51 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   </main>
 
   <main class="sheet" id="settingsView" style="display:none;margin-top:14px;">
-    <div class="section-title" style="margin-top:24px;">RÉGLAGES — CONNEXION À LA BASE PARTAGÉE</div>
-    <div class="settings-block">
-      <p class="hint">Ces informations viennent de ton projet Supabase (Paramètres du projet → API). La clé « anon public » n'est pas secrète.</p>
-      <div class="modal-field">
-        <label for="cfgUrl">URL du projet Supabase</label>
-        <input id="cfgUrl" type="text" placeholder="https://xxxxx.supabase.co">
-      </div>
-      <div class="modal-field">
-        <label for="cfgKey">Clé « anon public »</label>
-        <input id="cfgKey" type="text" placeholder="eyJhbGciOi...">
+    <div class="section-title" style="margin-top:24px;">RÉGLAGES</div>
+    <div class="settings-block" id="adminLock">
+      <p class="hint">Cette section est réservée au responsable. Saisis le code d'accès pour continuer.</p>
+      <div class="modal-field" style="max-width:220px;">
+        <label for="adminPinInput">Code d'accès</label>
+        <input id="adminPinInput" type="password" inputmode="numeric" placeholder="••••">
       </div>
       <div class="modal-actions">
-        <button id="saveSettingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Enregistrer et se connecter</span></button>
+        <button id="adminUnlockBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Déverrouiller</span></button>
       </div>
-      <p id="settingsMsg" class="hint"></p>
+      <p id="adminLockMsg" class="hint"></p>
     </div>
-    <div class="section-title">DONNÉES DE DÉMONSTRATION</div>
-    <div class="settings-block">
-      <p class="hint">Génère un historique fictif (53 patients, dates et prestations variées) pour prévisualiser le Relevé et les Statistiques. Ces données restent uniquement sur cet appareil et ne sont jamais envoyées à la base partagée — elles n'affectent donc pas les vraies factures des autres postes.</p>
-      <div class="modal-actions">
-        <button class="secondary" id="genDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Générer 53 factures de démonstration</span></button>
-        <button class="danger" id="clearDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span>Effacer les données de démonstration</span></button>
+
+    <div id="adminPanel" style="display:none;">
+      <div class="settings-block">
+        <p class="hint">Ces informations viennent de ton projet Supabase (Paramètres du projet → API). La clé « anon public » n'est pas secrète.</p>
+        <div class="modal-field">
+          <label for="cfgUrl">URL du projet Supabase</label>
+          <input id="cfgUrl" type="text" placeholder="https://xxxxx.supabase.co">
+        </div>
+        <div class="modal-field">
+          <label for="cfgKey">Clé « anon public »</label>
+          <input id="cfgKey" type="text" placeholder="eyJhbGciOi...">
+        </div>
+        <div class="modal-actions">
+          <button id="saveSettingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Enregistrer et se connecter</span></button>
+        </div>
+        <p id="settingsMsg" class="hint"></p>
       </div>
-      <p id="demoMsg" class="hint"></p>
+
+      <div class="section-title">POSTES ENREGISTRÉS</div>
+      <div class="settings-block">
+        <p class="hint">Chaque appareil qui utilise l'application apparaît ici, avec la dernière fois qu'il a été vu.</p>
+        <div id="devicesList" class="devices-list"></div>
+      </div>
+
+      <div class="section-title">DONNÉES DE DÉMONSTRATION</div>
+      <div class="settings-block">
+        <p class="hint">Génère un historique fictif (53 patients, dates et prestations variées) pour prévisualiser le Relevé et les Statistiques. Ces données restent uniquement sur cet appareil et ne sont jamais envoyées à la base partagée — elles n'affectent donc pas les vraies factures des autres postes.</p>
+        <div class="modal-actions">
+          <button class="secondary" id="genDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Générer 53 factures payées de démonstration</span></button>
+          <button class="danger" id="clearDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span>Effacer les données de démonstration</span></button>
+        </div>
+        <p id="demoMsg" class="hint"></p>
+      </div>
     </div>
   </main>
 
@@ -693,11 +736,70 @@ function confirmDialog(message, title) {
 }
 confirmModal.addEventListener("pointerdown", e => { if (e.target === confirmModal) confirmModal.style.display = "none"; });
 
+// -------- Helpers --------
+const fmt = n => new Intl.NumberFormat('fr-FR').format(Number(n||0)) + " FCFA";
+const normalize = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8); return v.toString(16);
+}));
+
+function todayISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset()*60000;
+  return new Date(d - tz).toISOString().slice(0,10);
+}
+
+// -------- Postes (appareils) --------
+const DEVICE_KEY = "cfl_device_id_v1";
+const DEVICE_LABEL_KEY = "cfl_device_label_v1";
+function getDeviceId() {
+  let id = localStorage.getItem(DEVICE_KEY);
+  if (!id) { id = uuid(); localStorage.setItem(DEVICE_KEY, id); }
+  return id;
+}
+function getDeviceLabel() { return localStorage.getItem(DEVICE_LABEL_KEY) || ""; }
+async function registerDevice() {
+  if (!sb || !navigator.onLine) return;
+  try {
+    await sb.from("devices").upsert({
+      id: getDeviceId(),
+      label: getDeviceLabel() || "Poste sans nom",
+      last_seen: new Date().toISOString()
+    }, { onConflict: "id" });
+  } catch (e) {}
+}
+async function renderDevicesList() {
+  const list = document.getElementById("devicesList");
+  if (!sb || !navigator.onLine) { list.innerHTML = '<p class="hint">Connecte-toi à la base partagée pour voir les postes enregistrés.</p>'; return; }
+  const { data, error } = await sb.from("devices").select("*").order("last_seen", { ascending: false });
+  if (error || !data || !data.length) { list.innerHTML = '<p class="hint">Aucun poste enregistré pour l\'instant.</p>'; return; }
+  list.innerHTML = data.map(d => `
+    <div class="device-row">
+      <span class="device-name">${d.label || "Poste sans nom"}${d.id === getDeviceId() ? " (cet appareil)" : ""}</span>
+      <span class="device-seen">Vu le ${new Date(d.last_seen).toLocaleString("fr-FR")}</span>
+    </div>
+  `).join("");
+}
+function checkDeviceBanner() {
+  const banner = document.getElementById("deviceBanner");
+  banner.style.display = getDeviceLabel() ? "none" : "flex";
+}
+document.getElementById("deviceLabelSaveBtn").addEventListener("click", () => {
+  const label = document.getElementById("deviceLabelInput").value.trim();
+  if (!label) return;
+  localStorage.setItem(DEVICE_LABEL_KEY, label);
+  document.getElementById("deviceBanner").style.display = "none";
+  registerDevice();
+  showToast("Ce poste est enregistré comme « " + label + " ».", "success");
+});
+
 // -------- Config / Supabase client --------
-// Remplis ces deux constantes une fois pour toutes (facultatif : les Réglages
-// dans l'app permettent aussi de les saisir depuis l'écran, sans toucher au code).
+// Pré-remplies par build.py (ADMIN_PIN / DEFAULT_SUPA_URL / DEFAULT_SUPA_KEY) :
+// une fois renseignées côté build.py, le personnel n'a plus jamais besoin de saisir
+// la connexion Supabase — seul le responsable y accède, via le code d'accès Réglages.
 const DEFAULT_SUPA_URL = "";
 const DEFAULT_SUPA_KEY = "";
+const ADMIN_PIN = "2026";
 
 function loadConfig() {
   try {
@@ -717,23 +819,11 @@ function initSupabase() {
       subscribeRealtime();
       flushPending();
       refreshReleve();
+      registerDevice();
     } catch (e) { sb = null; }
   }
 }
 initSupabase();
-
-// -------- Helpers --------
-const fmt = n => new Intl.NumberFormat('fr-FR').format(Number(n||0)) + " FCFA";
-const normalize = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-  const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8); return v.toString(16);
-}));
-
-function todayISO() {
-  const d = new Date();
-  const tz = d.getTimezoneOffset()*60000;
-  return new Date(d - tz).toISOString().slice(0,10);
-}
 
 // -------- Numéro de facture automatique --------
 function nextInvoiceNo(dateStr) {
@@ -1027,13 +1117,32 @@ document.getElementById("newBtn").addEventListener("click", async () => {
   loadState();
   showToast("Nouvelle facture vierge créée.", "info");
 });
+let adminUnlocked = false;
 function openSettings() {
   document.getElementById("cfgUrl").value = cfg ? cfg.url : "";
   document.getElementById("cfgKey").value = cfg ? cfg.key : "";
+  document.getElementById("adminPinInput").value = "";
+  document.getElementById("adminLockMsg").textContent = "";
+  document.getElementById("adminLock").style.display = adminUnlocked ? "none" : "block";
+  document.getElementById("adminPanel").style.display = adminUnlocked ? "block" : "none";
+  if (adminUnlocked) renderDevicesList();
   switchTab("reglages");
 }
 document.getElementById("settingsBtn").addEventListener("click", openSettings);
 document.getElementById("helpBtn").addEventListener("click", () => switchTab("aide"));
+function tryUnlockAdmin() {
+  const pin = document.getElementById("adminPinInput").value.trim();
+  if (pin && pin === ADMIN_PIN) {
+    adminUnlocked = true;
+    document.getElementById("adminLock").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    renderDevicesList();
+  } else {
+    document.getElementById("adminLockMsg").textContent = "Code incorrect.";
+  }
+}
+document.getElementById("adminUnlockBtn").addEventListener("click", tryUnlockAdmin);
+document.getElementById("adminPinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlockAdmin(); });
 document.getElementById("saveSettingsBtn").addEventListener("click", () => {
   const url = document.getElementById("cfgUrl").value.trim();
   const key = document.getElementById("cfgKey").value.trim();
@@ -1088,7 +1197,7 @@ function generateDemoInvoices(count) {
       lines,
       total,
       montant_lettres: amountToWordsFR(total),
-      paid: Math.random() > 0.5,
+      paid: true,
       created_at: d.toISOString(),
       updated_at: d.toISOString(),
       _demo: true
@@ -1100,8 +1209,8 @@ function generateDemoInvoices(count) {
 document.getElementById("genDemoBtn").addEventListener("click", () => {
   const list = generateDemoInvoices(53);
   localStorage.setItem(DEMO_KEY, JSON.stringify(list));
-  document.getElementById("demoMsg").textContent = "53 factures de démonstration générées.";
-  showToast("53 factures de démonstration ajoutées au Relevé et aux Statistiques.", "success");
+  document.getElementById("demoMsg").textContent = "53 factures payées de démonstration générées.";
+  showToast("53 factures payées de démonstration ajoutées au Relevé et aux Statistiques.", "success");
   refreshReleve();
 });
 document.getElementById("clearDemoBtn").addEventListener("click", () => {
@@ -1271,15 +1380,16 @@ function renderReleve() {
     const isDemo = !!r._demo;
     const createdMs = r.created_at ? new Date(r.created_at).getTime() : 0;
     const withinHour = createdMs > 0 && (Date.now() - createdMs) < 3600000;
-    const canManage = !isDemo && (r._pending || withinHour);
-    const paidTag = r.paid ? '<span class="tag paid">Payée</span>' : '';
+    const canManage = !isDemo && !r.paid && (r._pending || withinHour);
+    const statusLabel = isDemo ? "Démo" : (r.paid ? "Payée" : (r._pending ? "En attente" : "Synchronisée"));
+    const statusClass = isDemo ? "demo" : (r.paid ? "paid" : (r._pending ? "pending" : "synced"));
     let actionsHtml;
     if (isDemo) {
       actionsHtml = '';
     } else {
       actionsHtml = '<button class="secondary reopenBtn">Ouvrir</button>';
       if (canManage) {
-        if (!r.paid) actionsHtml += '<button class="secondary validateBtn">Valider payée</button>';
+        actionsHtml += '<button class="secondary validateBtn">Valider payée</button>';
         actionsHtml += '<button class="danger deleteBtn">Supprimer</button>';
       }
     }
@@ -1289,7 +1399,7 @@ function renderReleve() {
       <td>${(r.patient_nom||"")+" "+(r.patient_prenom||"")}</td>
       <td>${r.patient_contact||""}</td>
       <td class="money">${fmt(r.total)}</td>
-      <td><span class="tag ${isDemo?"demo":(r._pending?"pending":"synced")}">${isDemo?"Démo":(r._pending?"En attente":"Synchronisée")}</span>${paidTag}</td>
+      <td><span class="tag ${statusClass}">${statusLabel}</span></td>
       <td class="releve-actions">${actionsHtml}</td>
     `;
     if (!isDemo) {
@@ -1495,7 +1605,8 @@ if ("serviceWorker" in navigator) {
 // -------- Init --------
 loadState();
 updateNetStatus();
-if (!cfg) setTimeout(openSettings, 500);
+checkDeviceBanner();
+setInterval(registerDevice, 5 * 60 * 1000);
 </script>
 </body>
 </html>

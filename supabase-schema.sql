@@ -14,9 +14,13 @@ create table if not exists public.invoices (
   lines jsonb not null default '[]'::jsonb,
   total numeric not null default 0,
   montant_lettres text,
+  paid boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Si la table existait déjà (mise à jour) : ajoute la colonne "paid" sans rien casser.
+alter table public.invoices add column if not exists paid boolean not null default false;
 
 -- Maintient updated_at à jour automatiquement.
 create or replace function public.set_updated_at()
@@ -45,6 +49,9 @@ create policy "invoices_insert_all" on public.invoices for insert with check (tr
 
 drop policy if exists "invoices_update_all" on public.invoices;
 create policy "invoices_update_all" on public.invoices for update using (true) with check (true);
+
+drop policy if exists "invoices_delete_all" on public.invoices;
+create policy "invoices_delete_all" on public.invoices for delete using (true);
 
 -- Active la synchronisation en temps réel (pour que toutes les tablettes voient
 -- les nouvelles factures apparaître automatiquement dans le relevé).
