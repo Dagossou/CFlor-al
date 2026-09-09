@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#03bc76">
+<meta name="theme-color" content="#16324f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CFL Facture">
@@ -13,25 +13,33 @@
 <title>CFL Facturation</title>
 <style>
 :root {
-  --brand:#03bc76;
-  --brand-dark:#029c62;
-  --brand-light:#e4f8ee;
-  --brand-lighter:#f2fbf6;
-  --gray:#5b5c5e;
-  --ink:#1c2622;
-  --muted:#6d7871;
-  --border:#e2e8e4;
+  --navy:#16324f;
+  --navy-deep:#0e2338;
+  --brand:#01bc75;
+  --brand-dark:#007a4d;
+  --brand-light:#e1f7ec;
+  --brand-lighter:#f1fbf6;
+  --info:#2f80ed;
+  --info-bg:#eaf2fe;
+  --turquoise:#18a7a0;
+  --turquoise-bg:#e6f6f5;
+  --lavender:#7c6fe8;
+  --lavender-bg:#efedfd;
+  --gray:#4b5b6b;
+  --ink:#243447;
+  --muted:#66788a;
+  --border:#dce4ea;
   --card:#ffffff;
-  --bg:#f2f6f4;
-  --cream:#fbfdfa;
-  --warn:#dd9a2e;
-  --warn-bg:#fdf1dc;
-  --bad:#e0554a;
-  --bad-bg:#fbe7e5;
-  --ok-bg:#e2f6ea;
-  --shadow-sm:0 2px 8px rgba(28,58,44,.06);
-  --shadow-md:0 10px 30px rgba(20,45,34,.10);
-  --shadow-lg:0 20px 55px rgba(20,45,34,.16);
+  --bg:#f7fafc;
+  --cream:#fcfdfe;
+  --warn:#f4b740;
+  --warn-bg:#fdf1d8;
+  --bad:#e05260;
+  --bad-bg:#fbe6e8;
+  --ok-bg:#e1f7ec;
+  --shadow-sm:0 2px 8px rgba(22,50,79,.06);
+  --shadow-md:0 10px 30px rgba(22,50,79,.10);
+  --shadow-lg:0 20px 55px rgba(22,50,79,.18);
   --radius:16px;
   --radius-sm:10px;
   color-scheme: light;
@@ -40,15 +48,12 @@
 svg { width:18px; height:18px; display:inline-block; vertical-align:middle; flex:0 0 auto; }
 .modal-card h3 svg, .help-card h3 svg { width:20px; height:20px; margin-right:6px; vertical-align:-4px; }
 html,body {
-  margin:0; padding:0; background:
-    radial-gradient(1100px 480px at 15% -10%, var(--brand-lighter), transparent),
-    radial-gradient(900px 420px at 100% 0%, #eef7f1, transparent),
-    var(--bg);
+  margin:0; padding:0; background:var(--bg);
   color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
 }
 body { min-height:100vh; }
-.app { max-width:1180px; margin:0 auto; padding:16px; }
+.app { padding:0 0 24px; }
 
 @keyframes fadeInUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -62,28 +67,41 @@ body { min-height:100vh; }
 @keyframes toastOut { from { opacity:1; transform:translateY(0) scale(1); } to { opacity:0; transform:translateY(8px) scale(.96); } }
 @keyframes shimmer { 0% { background-position:-200px 0; } 100% { background-position:calc(200px + 100%) 0; } }
 
-.topbar {
-  position:sticky; top:0; z-index:1000;
-  padding:10px 0 0;
+.shell { display:flex; align-items:flex-start; max-width:1500px; margin:0 auto; gap:18px; padding:18px 18px 0; }
+.sidebar {
+  width:252px; flex:0 0 252px; position:sticky; top:18px;
+  background:linear-gradient(165deg, var(--navy), var(--navy-deep));
+  border-radius:var(--radius); padding:20px 14px; display:flex; flex-direction:column; gap:4px;
+  min-height:calc(100vh - 36px); box-shadow:var(--shadow-lg); color:#fff; animation:fadeIn .4s ease;
 }
-.toolbar {
-  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
-  padding:10px 14px; background:rgba(255,255,255,.82); backdrop-filter:blur(14px) saturate(160%);
-  border:1px solid rgba(226,232,228,.9); border-radius:18px; box-shadow:var(--shadow-sm);
+.sidebar-brand { display:flex; align-items:center; gap:11px; padding:2px 10px 18px; border-bottom:1px solid rgba(255,255,255,.14); margin-bottom:10px; }
+.sidebar-brand img { height:36px; width:auto; filter:brightness(0) invert(1); opacity:.96; }
+.sidebar-brand .sidebar-title { font-weight:800; font-size:13.5px; line-height:1.35; color:#fff; }
+.sidebar-brand .sidebar-title small { display:block; font-weight:600; font-size:10.5px; color:rgba(255,255,255,.55); letter-spacing:.2px; margin-top:2px; }
+.nav-item {
+  display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:transparent; color:rgba(255,255,255,.7);
+  border:0; box-shadow:none; padding:11px 12px; min-height:44px; border-radius:12px; font-weight:700; font-size:14px;
+  transition:background .2s ease, color .2s ease, transform .12s ease;
 }
-.tabs { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; background:var(--brand-lighter); border-radius:12px; padding:4px; position:relative; min-width:480px; }
-button.tab {
-  position:relative; z-index:1; background:transparent; color:var(--muted); border:0; box-shadow:none;
-  padding:9px 14px; min-height:38px; font-weight:700; font-size:14px; border-radius:9px;
-  transition:color .25s ease; width:100%; text-align:center; justify-content:center; white-space:nowrap;
+.nav-item svg { width:19px; height:19px; flex:0 0 auto; }
+.nav-item:hover { background:rgba(255,255,255,.09); color:#fff; }
+.nav-item:active { transform:scale(.98); }
+.nav-item.active { background:linear-gradient(135deg, var(--brand), var(--brand-dark)); color:#fff; box-shadow:0 6px 16px rgba(1,188,117,.35); }
+.sidebar-footer { margin-top:auto; display:flex; flex-direction:column; gap:6px; padding-top:14px; border-top:1px solid rgba(255,255,255,.14); }
+.sidebar .status-chip {
+  background:rgba(255,255,255,.08); color:#fff; width:100%; justify-content:flex-start;
+  border-radius:12px; padding:10px 12px;
 }
-button.tab.active { color:#fff; }
-.tab-indicator {
-  position:absolute; top:4px; bottom:4px; left:4px; width:calc(33.333% - 4px);
-  background:linear-gradient(135deg, var(--brand), var(--brand-dark)); border-radius:9px;
-  box-shadow:0 6px 16px rgba(3,188,118,.35);
-  transition:transform .28s cubic-bezier(.4,0,.2,1);
+.sidebar .status-chip.off { background:rgba(224,82,96,.2); color:#ffc2c8; }
+.sidebar .pending-badge { width:100%; justify-content:center; }
+.main { flex:1; min-width:0; }
+.topbar-v2 {
+  position:sticky; top:18px; z-index:1000; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:14px 20px; background:rgba(255,255,255,.85); backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(226,232,228,.9); border-radius:18px; box-shadow:var(--shadow-sm); margin-bottom:16px;
 }
+.topbar-v2 .page-title { font-size:18.5px; font-weight:800; color:var(--ink); margin-right:auto; }
+.topbar-actions { display:flex; gap:10px; flex-wrap:wrap; }
 button {
   border:0; border-radius:var(--radius-sm); padding:10px 16px; min-height:44px; font-size:14.5px; font-weight:700;
   background:var(--brand); color:white; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
@@ -254,6 +272,10 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   color:#fff; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
 }
 .kpi-icon svg { width:21px; height:21px; }
+.kpi-icon.info { background:linear-gradient(135deg, var(--info), #1c5fc4); }
+.kpi-icon.turquoise { background:linear-gradient(135deg, var(--turquoise), #0f7a75); }
+.kpi-icon.amber { background:linear-gradient(135deg, var(--warn), #d99420); }
+.kpi-icon.lavender { background:linear-gradient(135deg, var(--lavender), #5b4dd6); }
 .kpi-body .kpi-label { font-size:11.5px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
 .kpi-body .kpi-value { font-size:21px; font-weight:800; color:var(--ink); margin-top:3px; font-variant-numeric:tabular-nums; }
 
@@ -293,13 +315,27 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .toast.hide { animation:toastOut .2s ease forwards; }
 .toast svg { width:18px; height:18px; flex:0 0 auto; }
 
-@media (max-width:800px) {
-  .app { padding:10px; }
-  .topbar { top:0; }
-  .toolbar { padding:8px; border-radius:14px; flex-direction:column; align-items:stretch; }
-  .tabs { width:100%; min-width:0; }
-  .toolbar > button { width:100%; justify-content:center; }
-  .status { width:100%; justify-content:center; margin:2px 0 0; }
+@media (max-width:900px) {
+  .shell { flex-direction:column; align-items:stretch; padding:10px 10px 0; gap:10px; }
+  .sidebar {
+    width:100%; flex:0 0 auto; position:sticky; top:0; min-height:auto;
+    flex-direction:row; flex-wrap:wrap; align-items:center; padding:10px 10px; border-radius:14px; z-index:1000; gap:6px;
+  }
+  .sidebar-brand { padding:0 10px 0 0; border-bottom:0; margin-bottom:0; border-right:1px solid rgba(255,255,255,.14); margin-right:2px; }
+  .sidebar-brand .sidebar-title small { display:none; }
+  .nav-item { width:auto; padding:9px 11px; }
+  .nav-item span { display:none; }
+  .sidebar-footer { margin-top:0; margin-left:auto; flex-direction:row; border-top:0; padding-top:0; align-items:center; gap:6px; }
+  .sidebar .status-chip { padding:9px; width:auto; }
+  .sidebar .status-chip span:not(.dot) { display:none; }
+  .sidebar .pending-badge { width:auto; padding:6px 9px; font-size:11px; }
+  .topbar-v2 { top:0; padding:10px 12px; flex-direction:column; align-items:stretch; gap:8px; }
+  .topbar-v2 .page-title { font-size:15.5px; margin-right:0; }
+  .topbar-actions { width:100%; }
+  .topbar-actions > button { flex:1; justify-content:center; padding:10px 8px; font-size:13px; }
+  .topbar-actions > button span { display:inline; }
+  html,body { overflow-x:hidden; }
+  .app { padding:0 0 20px; }
   .sheet { border-radius:16px; }
   .brand { padding:18px 16px; gap:12px; }
   .brand img.logo { height:42px; }
@@ -325,8 +361,9 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 @media print {
   @page { size:A4 portrait; margin:8mm; }
   html,body { background:white; }
+  .shell { display:block; max-width:none; padding:0; }
   .app { max-width:none; padding:0; }
-  .topbar,.footer-note,.help,.modal,.suggestions,#releveView,#statsView,.toast-stack { display:none!important; }
+  .sidebar,.topbar-v2,.footer-note,.help,.modal,.suggestions,#releveView,#statsView,.toast-stack { display:none!important; }
   .sheet { box-shadow:none; border-radius:0; border:0; animation:none; }
   .brand { -webkit-print-color-adjust:exact; print-color-adjust:exact; background:white; }
   .section-title,th,.total-label,.total-value { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -346,26 +383,32 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="toolbar">
-      <div class="tabs">
-        <div class="tab-indicator" id="tabIndicator"></div>
-        <button class="tab active" id="tabFacture">Facturation</button>
-        <button class="tab" id="tabReleve">Relevé des factures</button>
-        <button class="tab" id="tabStats">Statistiques</button>
-      </div>
-      <button id="printBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span>Imprimer / PDF</span></button>
-      <button class="secondary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Ligne</span></button>
-      <button class="secondary" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Réglages</span></button>
-      <button class="secondary" id="helpBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Aide</span></button>
-      <button class="danger" id="newBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Nouvelle</span></button>
-      <div class="status">
-        <span class="status-chip" id="statusChip"><span class="dot" id="netDot"></span><span id="netLabel">En ligne</span></span>
-        <span id="pendingBadge" class="pending-badge" style="display:none"></span>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="logo.png" alt="Clinique Floréal de Lomé">
+      <div class="sidebar-title">CFL Facturation<small>Clinique Floréal de Lomé</small></div>
+    </div>
+    <button class="nav-item active" id="tabFacture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg><span>Facturation</span></button>
+    <button class="nav-item" id="tabReleve"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Relevé des factures</span></button>
+    <button class="nav-item" id="tabStats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Statistiques</span></button>
+    <div class="sidebar-footer">
+      <button class="nav-item" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Réglages</span></button>
+      <button class="nav-item" id="helpBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Aide</span></button>
+      <div class="status-chip" id="statusChip"><span class="dot" id="netDot"></span><span id="netLabel">En ligne</span></div>
+      <span id="pendingBadge" class="pending-badge" style="display:none"></span>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar-v2">
+      <div class="page-title" id="pageTitle">Facturation</div>
+      <div class="topbar-actions" id="topbarActions">
+        <button id="printBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span>Imprimer / PDF</span></button>
+        <button class="secondary" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Ligne</span></button>
+        <button class="danger" id="newBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Nouvelle</span></button>
       </div>
     </div>
-  </div>
+    <div class="app">
 
   <main class="sheet" id="invoice">
     <header class="brand">
@@ -455,9 +498,9 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></div><div class="kpi-body"><div class="kpi-label">Chiffre d'affaires</div><div class="kpi-value" id="kpiRevenue">0 FCFA</div></div></div>
-      <div class="kpi-card"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg></div><div class="kpi-body"><div class="kpi-label">Factures émises</div><div class="kpi-value" id="kpiCount">0</div></div></div>
-      <div class="kpi-card"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="kpi-body"><div class="kpi-label">Panier moyen</div><div class="kpi-value" id="kpiAvg">0 FCFA</div></div></div>
-      <div class="kpi-card"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="kpi-body"><div class="kpi-label">Facture la plus élevée</div><div class="kpi-value" id="kpiMax">0 FCFA</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg></div><div class="kpi-body"><div class="kpi-label">Factures émises</div><div class="kpi-value" id="kpiCount">0</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon turquoise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="kpi-body"><div class="kpi-label">Panier moyen</div><div class="kpi-value" id="kpiAvg">0 FCFA</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="kpi-body"><div class="kpi-label">Facture la plus élevée</div><div class="kpi-value" id="kpiMax">0 FCFA</div></div></div>
     </div>
 
     <div class="charts-grid">
@@ -480,6 +523,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <div id="topPrestations"></div>
     </div>
   </main>
+    </div>
+  </div>
 </div>
 
 <div class="help" id="help">
@@ -1028,15 +1073,16 @@ document.getElementById("exportCsvBtn").addEventListener("click", () => {
 
 // -------- Tabs --------
 const TAB_ORDER = ["facture", "releve", "stats"];
+const TAB_TITLES = { facture:"Facturation", releve:"Relevé des factures", stats:"Statistiques" };
 function switchTab(name) {
-  const idx = TAB_ORDER.indexOf(name);
   document.getElementById("invoice").style.display = name === "facture" ? "block" : "none";
   document.getElementById("releveView").style.display = name === "releve" ? "block" : "none";
   document.getElementById("statsView").style.display = name === "stats" ? "block" : "none";
   document.getElementById("tabFacture").classList.toggle("active", name === "facture");
   document.getElementById("tabReleve").classList.toggle("active", name === "releve");
   document.getElementById("tabStats").classList.toggle("active", name === "stats");
-  document.getElementById("tabIndicator").style.transform = "translateX(" + (idx * 100) + "%)";
+  document.getElementById("pageTitle").textContent = TAB_TITLES[name] || "";
+  document.getElementById("topbarActions").style.display = name === "facture" ? "flex" : "none";
   if (name === "releve") refreshReleve();
   if (name === "stats") refreshReleve().then(renderStats);
 }
@@ -1047,7 +1093,7 @@ document.getElementById("tabStats").addEventListener("click", () => switchTab("s
 // -------- Statistiques --------
 let statsPeriod = "30";
 let charts = {};
-const CHART_COLORS = { brand:"#03bc76", brandDark:"#029c62", gray:"#5b5c5e", grayLight:"#b7c0bc", warn:"#dd9a2e", bad:"#e0554a", grid:"#e2e8e4" };
+const CHART_COLORS = { brand:"#01bc75", brandDark:"#007a4d", info:"#2f80ed", turquoise:"#18a7a0", lavender:"#7c6fe8", gray:"#4b5b6b", grayLight:"#b7c0bc", warn:"#f4b740", bad:"#e05260", grid:"#e2e8ee" };
 
 document.querySelectorAll(".period-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -1096,7 +1142,7 @@ function renderStats() {
   const genderLabels = Object.keys(genderCount).filter(k => genderCount[k] > 0);
   drawChart("chartGender", "doughnut", {
     labels: genderLabels,
-    datasets: [{ data: genderLabels.map(k => genderCount[k]), backgroundColor: [CHART_COLORS.brand, CHART_COLORS.warn, CHART_COLORS.gray, CHART_COLORS.grayLight], borderWidth:0 }]
+    datasets: [{ data: genderLabels.map(k => genderCount[k]), backgroundColor: [CHART_COLORS.info, CHART_COLORS.lavender, CHART_COLORS.turquoise, CHART_COLORS.warn], borderWidth:0 }]
   }, { plugins:{ legend:{ position:"bottom", labels:{ boxWidth:10, font:{size:11} } } } });
 
   // Weekday distribution
@@ -1105,7 +1151,7 @@ function renderStats() {
   rows.forEach(r => { if (r.invoice_date) { const d = new Date(r.invoice_date + "T00:00:00"); if (!isNaN(d)) weekdayCount[d.getDay()]++; } });
   drawChart("chartWeekday", "bar", {
     labels: weekdayNames,
-    datasets: [{ label:"Factures", data: weekdayCount, backgroundColor: CHART_COLORS.brand, borderRadius:6, maxBarThickness:36 }]
+    datasets: [{ label:"Factures", data: weekdayCount, backgroundColor: CHART_COLORS.turquoise, borderRadius:6, maxBarThickness:36 }]
   }, { scales: { y:{ beginAtZero:true, ticks:{ precision:0 }, grid:{color:CHART_COLORS.grid} }, x:{ grid:{display:false} } }, plugins:{ legend:{display:false} } });
 
   // Top prestations
