@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f6f44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CFL Facture">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>CFL Facturation</title>
+<style>
+:root {
+  --green:#2f6f44;
+  --green-dark:#245737;
+  --green-light:#e7f0e9;
+  --cream:#fff9e8;
+  --line:#b7c0b9;
+  --ink:#22302a;
+  --muted:#66736c;
+  --paper:#ffffff;
+  --warn:#a05a1e;
+  --bad:#8e3d3d;
+}
+* { box-sizing:border-box; }
+html,body { margin:0; padding:0; background:#eef2ef; color:var(--ink); font-family:Arial,Helvetica,sans-serif; }
+body { min-height:100vh; }
+.app { max-width:1180px; margin:0 auto; padding:14px; }
+.toolbar {
+  position:sticky; top:0; z-index:1000; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:10px; background:rgba(238,242,239,.97); backdrop-filter:blur(8px);
+}
+button {
+  border:0; border-radius:10px; padding:12px 15px; min-height:46px; font-size:15px; font-weight:700;
+  background:var(--green); color:white; cursor:pointer;
+}
+button.secondary { background:white; color:var(--green); border:1px solid var(--green); }
+button.danger { background:var(--bad); }
+button.tab { background:white; color:var(--muted); border:1px solid var(--line); }
+button.tab.active { background:var(--green); color:white; border-color:var(--green); }
+.status { margin-left:auto; color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
+.dot { width:10px; height:10px; border-radius:50%; background:#3a9b57; display:inline-block; }
+.dot.off { background:var(--bad); }
+.pending-badge { background:var(--warn); color:white; border-radius:999px; padding:2px 8px; font-size:12px; font-weight:700; }
+.sheet {
+  background:var(--paper); box-shadow:0 4px 24px rgba(0,0,0,.09); border-radius:14px; overflow:visible;
+}
+.brand { background:#53815e; color:white; text-align:center; padding:28px 18px 22px; }
+.brand h1 { margin:0; font-size:30px; letter-spacing:.2px; }
+.brand .sub { margin-top:14px; padding:12px; background:#e9f0ea; color:#3d5a47; font-size:14px; }
+.invoice-head {
+  display:grid; grid-template-columns:1fr 360px; gap:18px; padding:24px 26px 10px;
+  align-items:end;
+}
+.invoice-head h2 { margin:0; color:var(--green); font-size:34px; }
+.meta-grid { display:grid; grid-template-columns:130px 1fr; gap:5px 8px; align-items:center; }
+.meta-grid label { text-align:right; color:var(--green); font-weight:700; }
+input,select,textarea {
+  width:100%; border:1px solid #c7cec9; border-radius:7px; padding:10px 11px; font-size:16px;
+  background:var(--cream); color:var(--ink); min-height:42px;
+}
+input:focus,select:focus,textarea:focus { outline:3px solid rgba(47,111,68,.18); border-color:var(--green); }
+.section-title { margin:10px 0 0; padding:8px 26px; background:var(--green); color:white; font-weight:800; }
+.patient { display:grid; grid-template-columns:120px 1fr 210px 1fr; gap:7px 10px; padding:12px 26px 18px; align-items:center; }
+.patient label { font-weight:700; }
+.table-wrap { padding:8px 26px 16px; overflow:visible; }
+table { width:100%; border-collapse:collapse; table-layout:fixed; }
+th { background:#dce9df; color:#294534; padding:13px 8px; border:1px solid #9eaaa1; font-size:14px; }
+td { border:1px solid #b8c0ba; padding:0; vertical-align:middle; position:relative; }
+td.desc { width:48%; background:var(--cream); overflow:visible; }
+td.qty { width:12%; background:var(--cream); }
+td.price,td.amount { width:20%; background:#f1f5f2; }
+td input { border:0; border-radius:0; background:transparent; min-height:48px; }
+.money { text-align:right; padding-right:12px; font-weight:700; font-variant-numeric:tabular-nums; }
+.suggestions {
+  display:none; position:absolute; z-index:5000; left:-1px; right:-1px; top:100%;
+  max-height:300px; overflow:auto; background:white; border:1px solid var(--green);
+  box-shadow:0 10px 24px rgba(0,0,0,.2); border-radius:0 0 10px 10px;
+}
+.suggestion {
+  padding:12px 14px; border-bottom:1px solid #edf0ed; display:flex; justify-content:space-between;
+  gap:12px; align-items:center; cursor:pointer; min-height:48px;
+}
+.suggestion:hover,.suggestion.active { background:#edf6ef; }
+.suggestion .name { font-size:15px; }
+.suggestion .price-tag { flex:0 0 auto; color:var(--green); font-weight:800; }
+.no-result { padding:14px; color:var(--muted); }
+.total-row { display:flex; justify-content:flex-end; align-items:center; padding:0 26px 18px; gap:0; }
+.total-label,.total-value { background:var(--green); color:white; padding:12px 16px; font-weight:800; }
+.total-label { min-width:220px; text-align:center; }
+.total-value { min-width:210px; text-align:right; border-left:1px solid rgba(255,255,255,.5); font-size:18px; }
+.words { padding:0 26px 24px; }
+.words label { color:var(--green); font-style:italic; font-weight:700; display:block; margin-bottom:6px; }
+.words .stop { font-style:italic; margin-bottom:6px; }
+.signatures { display:grid; grid-template-columns:1fr 1fr; gap:80px; padding:26px; text-align:center; font-weight:700; }
+.signature-line { margin-top:54px; border-top:1px solid #555; padding-top:8px; }
+.footer-note { padding:0 26px 24px; color:var(--muted); font-size:12px; text-align:center; }
+.help, .modal {
+  display:none; position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,.45);
+  align-items:center; justify-content:center; padding:18px;
+}
+.help-card, .modal-card { max-width:680px; background:white; border-radius:16px; padding:24px; max-height:90vh; overflow:auto; }
+.help-card h3, .modal-card h3 { color:var(--green); margin-top:0; }
+.help-card li { margin-bottom:10px; }
+.close-x { float:right; background:#eee; color:#333; padding:8px 12px; min-height:auto; }
+.modal-field { margin-bottom:14px; }
+.modal-field label { display:block; font-weight:700; color:var(--green); margin-bottom:4px; }
+.releve-toolbar { display:flex; flex-wrap:wrap; gap:8px; padding:16px 26px 6px; align-items:center; }
+.releve-toolbar input { flex:1; min-width:160px; }
+.releve-wrap { padding:6px 26px 26px; overflow-x:auto; }
+.releve-table { width:100%; border-collapse:collapse; min-width:820px; }
+.releve-table th { background:#dce9df; color:#294534; padding:10px 8px; border:1px solid #9eaaa1; font-size:13px; text-align:left; }
+.releve-table td { border:1px solid #b8c0ba; padding:9px 8px; font-size:14px; }
+.releve-table tr:nth-child(even) { background:#f7faf7; }
+.releve-actions button { padding:6px 10px; min-height:32px; font-size:13px; margin-right:6px; }
+.tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:700; }
+.tag.synced { background:#e2f3e7; color:var(--green-dark); }
+.tag.pending { background:#fdeecd; color:var(--warn); }
+.releve-summary { display:flex; gap:22px; padding:16px 26px 0; flex-wrap:wrap; }
+.releve-summary .stat { background:var(--green-light); border-radius:10px; padding:10px 16px; font-weight:700; color:var(--green-dark); }
+@media (max-width:800px) {
+  .app { padding:0; }
+  .toolbar { padding:8px; }
+  .sheet { border-radius:0; box-shadow:none; }
+  .brand { padding:20px 10px 14px; }
+  .brand h1 { font-size:23px; }
+  .invoice-head { grid-template-columns:1fr; padding:18px 12px 8px; }
+  .invoice-head h2 { font-size:29px; }
+  .meta-grid { grid-template-columns:110px 1fr; }
+  .patient { grid-template-columns:95px 1fr; padding:10px 12px 16px; }
+  .patient .right-label { margin-top:5px; }
+  .table-wrap { padding:6px 0 14px; overflow-x:auto; overflow-y:visible; }
+  table { min-width:760px; }
+  .total-row { padding:0 12px 18px; }
+  .words { padding:0 12px 20px; }
+  .signatures { gap:30px; padding:20px 12px; }
+  .status { width:100%; margin:0; text-align:center; justify-content:center; }
+  .releve-toolbar, .releve-wrap, .releve-summary { padding-left:12px; padding-right:12px; }
+}
+@media print {
+  @page { size:A4 portrait; margin:8mm; }
+  html,body { background:white; }
+  .app { max-width:none; padding:0; }
+  .toolbar,.footer-note,.help,.modal,.suggestions,#releveView,.tabs { display:none!important; }
+  .sheet { box-shadow:none; border-radius:0; }
+  .brand { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .section-title,th,.total-label,.total-value { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  input,select,textarea { border:0; padding:4px; min-height:26px; background:transparent!important; }
+  .invoice-head { padding:12px 10px 6px; }
+  .patient { padding:6px 10px 10px; }
+  .table-wrap { padding:4px 10px 10px; }
+  td input { min-height:30px; }
+  th { padding:8px 5px; }
+  .suggestions { display:none!important; }
+  .words { padding:0 10px 12px; }
+  .signatures { padding:12px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <button class="tab active" id="tabFacture">Facturation</button>
+    <button class="tab" id="tabReleve">Relevé des factures</button>
+    <button id="printBtn">Imprimer / PDF</button>
+    <button class="secondary" id="addBtn">Ajouter une ligne</button>
+    <button class="secondary" id="settingsBtn">Réglages</button>
+    <button class="secondary" id="helpBtn">Aide</button>
+    <button class="danger" id="newBtn">Nouvelle facture</button>
+    <div class="status">
+      <span class="dot" id="netDot"></span>
+      <span id="netLabel">En ligne</span>
+      <span id="pendingBadge" class="pending-badge" style="display:none"></span>
+    </div>
+  </div>
+
+  <main class="sheet" id="invoice">
+    <header class="brand">
+      <h1>CLINIQUE FLOREAL DE LOME</h1>
+      <div class="sub">Agoè Anomé, en face de l'Hôtel St Manick - 05 BP 1129 LOME-TOGO | Tél. (00228) 93 43 66 66 / 22 50 85 83 | florealclinique@gmail.com</div>
+    </header>
+
+    <section class="invoice-head">
+      <h2>FACTURE</h2>
+      <div class="meta-grid">
+        <label for="date">DATE</label><input id="date" type="date">
+        <label for="invoiceNo">N° FACTURE</label><input id="invoiceNo" type="text" inputmode="text">
+      </div>
+    </section>
+
+    <div class="section-title">PATIENT</div>
+    <section class="patient">
+      <label for="nom">Nom :</label><input id="nom" type="text" autocomplete="name">
+      <label class="right-label" for="periode">Période du traitement :</label><input id="periode" type="text">
+      <label for="prenom">Prénom :</label><input id="prenom" type="text">
+      <label class="right-label" for="contact">Contact :</label><input id="contact" type="tel" inputmode="tel">
+      <label for="sexe">Sexe :</label>
+      <select id="sexe"><option value=""></option><option>Masculin</option><option>Féminin</option><option>Autre</option></select>
+      <label class="right-label" for="age">Âge :</label><input id="age" type="number" min="0" inputmode="numeric">
+    </section>
+
+    <section class="table-wrap">
+      <table>
+        <thead><tr><th style="width:48%">DESCRIPTION</th><th style="width:12%">QUANTITÉ</th><th style="width:20%">PRIX UNITAIRE</th><th style="width:20%">MONTANT TOTAL</th></tr></thead>
+        <tbody id="lines"></tbody>
+      </table>
+    </section>
+
+    <div class="total-row">
+      <div class="total-label">MONTANT TOTAL</div><div class="total-value" id="grandTotal">0 FCFA</div>
+    </div>
+
+    <section class="words">
+      <label for="words">MONTANT EN LETTRES (à saisir)</label>
+      <div class="stop">Arrêter cette facture à la somme de :</div>
+      <textarea id="words" rows="3"></textarea>
+    </section>
+
+    <section class="signatures">
+      <div><div class="signature-line">Signature Patient(e)</div></div>
+      <div><div class="signature-line">Signature Caissier(e)</div></div>
+    </section>
+
+    <div class="toolbar" style="justify-content:center;box-shadow:none;position:static;">
+      <button id="emettreBtn" style="min-width:260px;font-size:16px;">Émettre / Enregistrer la facture</button>
+    </div>
+
+    <div class="footer-note">Application CFL Facturation — les factures sont synchronisées entre tous les postes connectés à Internet, et mises en attente automatiquement en cas de coupure.</div>
+  </main>
+
+  <main class="sheet" id="releveView" style="display:none;margin-top:14px;">
+    <div class="section-title">RELEVÉ DES FACTURES</div>
+    <div class="releve-summary">
+      <div class="stat" id="statCount">0 facture(s)</div>
+      <div class="stat" id="statTotal">0 FCFA</div>
+    </div>
+    <div class="releve-toolbar">
+      <input id="searchReleve" type="text" placeholder="Rechercher par nom de patient ou n° de facture...">
+      <input id="dateFrom" type="date" title="Du">
+      <input id="dateTo" type="date" title="Au">
+      <button class="secondary" id="exportCsvBtn">Exporter CSV</button>
+    </div>
+    <div class="releve-wrap">
+      <table class="releve-table">
+        <thead><tr><th>Date</th><th>N° Facture</th><th>Patient</th><th>Contact</th><th>Montant</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="releveBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="help" id="help">
+  <div class="help-card">
+    <button class="close-x" id="closeHelp">Fermer</button>
+    <h3>Utilisation</h3>
+    <ol>
+      <li>Touchez une cellule <b>DESCRIPTION</b> et commencez à taper, par exemple <b>consult</b>.</li>
+      <li>La liste se filtre immédiatement. Touchez la prestation voulue : le prix est renseigné automatiquement.</li>
+      <li>Saisissez la quantité. Le montant de la ligne et le total se calculent automatiquement.</li>
+      <li>Touchez <b>Émettre / Enregistrer la facture</b> pour l'ajouter au relevé partagé.</li>
+      <li>Utilisez <b>Imprimer / PDF</b> pour imprimer ou enregistrer en PDF.</li>
+      <li>Si la connexion Internet est coupée, la facture reste enregistrée sur cet appareil (badge "en attente") puis se synchronise automatiquement au retour du réseau.</li>
+      <li>Sur une tablette ou un téléphone, utilisez le menu du navigateur → <b>Ajouter à l'écran d'accueil / Installer l'application</b> pour avoir une icône comme une vraie application.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-card">
+    <button class="close-x" id="closeSettings">Fermer</button>
+    <h3>Réglages — connexion à la base de données partagée</h3>
+    <p style="color:var(--muted);font-size:14px;">Ces informations viennent de ton projet Supabase (Paramètres du projet → API). La clé "anon public" n'est pas secrète.</p>
+    <div class="modal-field">
+      <label for="cfgUrl">URL du projet Supabase</label>
+      <input id="cfgUrl" type="text" placeholder="https://xxxxx.supabase.co">
+    </div>
+    <div class="modal-field">
+      <label for="cfgKey">Clé "anon public"</label>
+      <input id="cfgKey" type="text" placeholder="eyJhbGciOi...">
+    </div>
+    <button id="saveSettingsBtn">Enregistrer et se connecter</button>
+    <p id="settingsMsg" style="color:var(--muted);font-size:13px;"></p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const CATALOG = [{"id":1,"name":"17 Hydroxy-corticoïde urinaire (17-OH)","price":25000},{"id":2,"name":"Ac anti DNA natif","price":25000},{"id":3,"name":"Ac anti GAD","price":37500},{"id":4,"name":"Ac anti IA 2","price":35000},{"id":5,"name":"Ac anti IAZ","price":32000},{"id":6,"name":"Ac anti ilots de Langerhans","price":18500},{"id":7,"name":"Ac anti nucléaires","price":110500},{"id":8,"name":"Ac anti phospholipides","price":25000},{"id":9,"name":"Ac anti SSA/RO","price":40000},{"id":10,"name":"Ac Anti SSB","price":39000},{"id":11,"name":"Ac anti SSM","price":39000},{"id":12,"name":"Ac anti Thyro-Peroxydase","price":25000},{"id":13,"name":"Ac anti thyroglobuline","price":24500},{"id":14,"name":"Ac anti thyroïdiens (Ac anti thyroglobuline + anti TPO)","price":39000},{"id":15,"name":"Ac anticardiolipine IgG","price":25000},{"id":16,"name":"Ac anticardiolipine IgM","price":25000},{"id":17,"name":"Ac antirécepteur acétyl-choline","price":31000},{"id":18,"name":"Ac antirécepteurs de la thyréostimuline ou TSH (TRAK)","price":41000},{"id":19,"name":"Accouchement Compliquée (dystocie)- Sage femme","price":60000},{"id":20,"name":"Accouchement Compliquée (dystocie)--Medecin","price":90000},{"id":21,"name":"Accouchement Gémellaire- Medecin","price":90000},{"id":22,"name":"Accouchement Gémellaire-Sage femme","price":60000},{"id":23,"name":"Accouchement Simple-Medecin","price":80000},{"id":24,"name":"Accouchement Simple-Sage femme","price":45000},{"id":25,"name":"ACE (Anticorps Carcino-Embryonnaire)","price":16000},{"id":26,"name":"Acide Urique ou Uricémie","price":3600},{"id":27,"name":"Acide urique urinaire ou Urate ou Uraturie des 24 H","price":6000},{"id":28,"name":"Activité Renine Plasmatique (ARP)","price":31000},{"id":29,"name":"Acupan 20 mg inj  2 ml","price":1100},{"id":30,"name":"Acétonurie ou Corps cétoniques","price":2000},{"id":31,"name":"Adenogramme","price":17000},{"id":32,"name":"Adenovirus sérologie","price":19000},{"id":33,"name":"Adrénaline inj 1 mg/ml.","price":1200},{"id":34,"name":"Agglutinines irrégulières (dépistage) ou RAI","price":10000},{"id":35,"name":"Albuminurie ou Protéinurie","price":2000},{"id":36,"name":"Aldolase","price":16000},{"id":37,"name":"Aldostéronurie (Urines de 24 H)","price":35000},{"id":38,"name":"Aldostéronémie (Prélèvement sang)","price":31000},{"id":39,"name":"Alpha foetoprotéine (AFP)","price":16000},{"id":40,"name":"AMIU","price":35000},{"id":41,"name":"AMOXICLA-M (Amoxicilline Clavulanique) inj 1.2 g","price":3500},{"id":42,"name":"Amylasurie des 24 H","price":7000},{"id":43,"name":"Amylasémie (Amylase)","price":7000},{"id":44,"name":"Analgin inj 2.5g","price":1000},{"id":45,"name":"Analyse céphalométrique","price":22500},{"id":46,"name":"Androsténédione delta 4","price":31000},{"id":47,"name":"Angioplastie","price":120000},{"id":48,"name":"Anti -Thrombine III","price":18500},{"id":49,"name":"Anti-Hépatite  B","price":3500},{"id":50,"name":"Anti-tétanique","price":1500},{"id":51,"name":"Anticorps anti-peptides ou CCP -2","price":25000},{"id":52,"name":"Antifongigramme","price":8500},{"id":53,"name":"Apolipoprotéine E (dosage)","price":17000},{"id":54,"name":"Apolipoprotéine E (génotypage)","price":118500},{"id":55,"name":"Apolipoprotéines A1","price":18000},{"id":56,"name":"Apolipoprotéines B2","price":18000},{"id":57,"name":"Application de fluor (par séance)","price":15000},{"id":58,"name":"Artem (Artemether) inj 40mg","price":1300},{"id":59,"name":"Artem (Artemether) inj 80mg","price":1300},{"id":60,"name":"Artesiane (Artemether) inj 20mg","price":1000},{"id":61,"name":"Artesiane (Artemether) inj 80mg","price":1300},{"id":62,"name":"Artesun (Artesunate) Inj 120mg","price":3500},{"id":63,"name":"Artesun (Artesunate) Inj 30 mg","price":1500},{"id":64,"name":"Artesun (Artesunate) Inj 60 mg","price":2000},{"id":65,"name":"ASDOR B","price":17000},{"id":66,"name":"ASLO","price":6000},{"id":67,"name":"Aspegic (Acétylsalicylate de lysine) 1g Inj.","price":1650},{"id":68,"name":"ATROVENT (Ipratropium) Nébulisation 0.5MG/2ML B12","price":4600},{"id":69,"name":"Attelle métallique","price":60000},{"id":70,"name":"AUGMENTIN (Amoxicilline Clavulanique) inj 0.5 g","price":3400},{"id":71,"name":"AUGMENTIN (Amoxicilline Clavulanique) inj 1.2 g","price":3500},{"id":72,"name":"Avec déplacement","price":150000},{"id":73,"name":"Avec déplacement","price":180000},{"id":74,"name":"BAAR Culture + ABG","price":12000},{"id":75,"name":"BAAR dans crachats (J1 +J2 +J3 )","price":8000},{"id":76,"name":"BAAR direct (Ziehl Neelson)","price":8000},{"id":77,"name":"Babésie (Vétérinaire)","price":2000},{"id":78,"name":"Bactériologie Hélicobacter pylori (1ère / 2ème dét)","price":23000},{"id":79,"name":"Bactériologie Hélicobacter pylori 2ème détermination","price":29000},{"id":80,"name":"Bactériologie Hémoculture","price":8000},{"id":81,"name":"Bactériologie LCR : Culture","price":8000},{"id":82,"name":"Bactériologie LCR : recherche d’Ag solubles","price":4000},{"id":83,"name":"Bactériologie Liquide Articulaire : Culture","price":8000},{"id":84,"name":"Bactériologie Liquide d' Ascite : Culture","price":8000},{"id":85,"name":"Bactériologie Liquide Pleural : Culture","price":8000},{"id":86,"name":"Bactériologie Mycoplasma","price":28000},{"id":87,"name":"Bactériologie Prélèvement de gorge","price":8000},{"id":88,"name":"Bactériologie Prélèvement de pus","price":8000},{"id":89,"name":"Bactériologie Prélèvement de pus + ATBG","price":8000},{"id":90,"name":"Bactériologie Prélèvement Urétral (PU)","price":8000},{"id":91,"name":"Bactériologie Prélèvement Urétral (PU) : Chlamydiae","price":12000},{"id":92,"name":"Bactériologie Prélèvement Urétral (PU) : Mycoplasmes","price":12000},{"id":93,"name":"Bactériologie Prélèvement Vaginal (PV)","price":8000},{"id":94,"name":"Bactériologie Prélèvement Vaginal (PV) + ATBG","price":8000},{"id":95,"name":"Bactériologie Prélèvement Vaginal : Chlamydiae","price":12000},{"id":96,"name":"Bactériologie Prélèvement Vaginal : Mycoplasmes","price":12000},{"id":97,"name":"Bactériologie Recherche de Cryptocoques : LCR","price":5000},{"id":98,"name":"Bande Crêpe 10 cm x 4m unité","price":1000},{"id":99,"name":"Bande crêpe 7,5 cm x 4 m unité","price":700},{"id":100,"name":"Barbituriques : Urines","price":25000},{"id":101,"name":"Beta HCG bandelette","price":16000},{"id":102,"name":"Beta HCG Sanguin","price":16000},{"id":103,"name":"Bicarbonates","price":4000},{"id":104,"name":"Bilan lipidique (Cholest. total + HDL + LDL + Triglycérides)","price":13000},{"id":105,"name":"Bilirubine (totale + conjuguée)","price":8000},{"id":106,"name":"Bilirubine (Totale + Directe + Indirecte )","price":8000},{"id":107,"name":"Bilirubine directe","price":4000},{"id":108,"name":"Bilirubine indirecte","price":8000},{"id":109,"name":"Bilirubine totale","price":4000},{"id":110,"name":"Biopsie cutanée : recherche de microfiliaires","price":5000},{"id":111,"name":"Biopsie cutanée exsangue (BCE)","price":3500},{"id":112,"name":"Biopsie spécifique 1","price":16000},{"id":113,"name":"Biopsie-Ponctions","price":16000},{"id":114,"name":"BNP","price":29000},{"id":115,"name":"Brucellose IgG + IgM","price":30000},{"id":116,"name":"Béta-2-Microglobuline","price":18000},{"id":117,"name":"Bétadine jaune (Polyvidone Iodée) FP 125 ml","price":2000},{"id":118,"name":"Bétadine rouge  (Polyvidone Iodée) FP 125 ml","price":2000},{"id":119,"name":"CA 125","price":16000},{"id":120,"name":"CA 15-3","price":20000},{"id":121,"name":"CA 19-9","price":16000},{"id":122,"name":"CA-72-4","price":36000},{"id":123,"name":"Calcitonine ou Calcitonine HCT","price":30000},{"id":124,"name":"Calcium gluconate 10 % Inj","price":1000},{"id":125,"name":"Calcium ionisé","price":20000},{"id":126,"name":"Calcium urinaire ou Calciurie des 24 H","price":5000},{"id":127,"name":"Calcémie","price":4000},{"id":128,"name":"Carbamazépine","price":25000},{"id":129,"name":"Catapressan 0.15MG SOL INJ","price":1800},{"id":130,"name":"Catécholamines (sang)","price":39000},{"id":131,"name":"Catécholamines fractionnées Plasma","price":39000},{"id":132,"name":"Catécholamines fractionnées Urines des 24 H","price":39000},{"id":133,"name":"Catécholamines urines de 24 H","price":39000},{"id":134,"name":"Celestène (BETAMETHASONE) 4MG/ML Inj","price":1500},{"id":135,"name":"Certificat Medical d'Aptitude","price":3000},{"id":136,"name":"Certificat Medical Dentaire","price":40000},{"id":137,"name":"Certificat Medical Initital","price":10000},{"id":138,"name":"CETAFOR (Ceftriaxone sodiu 1 g Inj","price":2800},{"id":139,"name":"CETAFOR (Ceftriaxone sodiu 500 mg Inj","price":2800},{"id":140,"name":"Charge virale hépatite B","price":20000},{"id":141,"name":"Charge virale VIH","price":5000},{"id":142,"name":"Chlamydiae Sérologie","price":16000},{"id":143,"name":"Chlore (Cl)","price":4000},{"id":144,"name":"Cholestérol HDL","price":4000},{"id":145,"name":"Cholestérol LDL","price":4000},{"id":146,"name":"Cholestérol Total","price":4000},{"id":147,"name":"CIPRONAT (Ciprofloxacine) 2MG/ML SOL PERF Inj","price":1500},{"id":148,"name":"CIPROX (Ciprofloxacine) 2MG/ML SOL PERF Inj","price":1500},{"id":149,"name":"Circonscrite à l’os alvéolaire","price":15000},{"id":150,"name":"CK-MB","price":8000},{"id":151,"name":"CLAVOX (Amoxicilline Clavulanique) inj 1.2 g","price":3500},{"id":152,"name":"Clearance de la créatinine","price":6000},{"id":153,"name":"CMV (IgG + IgM spécifiques)","price":45000},{"id":154,"name":"CO2 total ou PaCO2 ou Réserve Alcaline","price":5000},{"id":155,"name":"Coloration de Gram (Cytologie)","price":4000},{"id":156,"name":"Coloscopie","price":70000},{"id":157,"name":"Coloscopie  + biopsie","price":80000},{"id":158,"name":"Combi-9","price":10000},{"id":159,"name":"Compresse gaze","price":1000},{"id":160,"name":"Compresse gaze stérile 40x40 boîte de 10","price":1000},{"id":161,"name":"comptage CD4","price":5000},{"id":162,"name":"Comptage CD4/CD8","price":5000},{"id":163,"name":"Consultation  bucco-dentaire de nuit et jours fériés","price":9500},{"id":164,"name":"Consultation Anesthese réanimation","price":8500},{"id":165,"name":"Consultation bucco-dentaire ordinaire (heures ouvrables normales)","price":7000},{"id":166,"name":"Consultation bucco-dentaire spécialisées","price":8500},{"id":167,"name":"Consultation chirugie generale","price":8500},{"id":168,"name":"Consultation chirugie pédiatrique","price":8500},{"id":169,"name":"Consultation de  neurologie,","price":15000},{"id":170,"name":"Consultation de  pneumologie,","price":8500},{"id":171,"name":"Consultation de cardiologie,","price":8500},{"id":172,"name":"Consultation de dermatologie","price":8500},{"id":173,"name":"Consultation de gériartrie","price":8500},{"id":174,"name":"Consultation de Hepato-gastro-enterologie","price":8500},{"id":175,"name":"Consultation de maladie infectieuse","price":8500},{"id":176,"name":"Consultation de médecine etc.)","price":8500},{"id":177,"name":"Consultation de médecine générale(Jour)","price":7000},{"id":178,"name":"Consultation de médecine générale(Nuit - Week-end)","price":10000},{"id":179,"name":"Consultation de ORL","price":8500},{"id":180,"name":"Consultation de suivi prénatal","price":8500},{"id":181,"name":"Consultation dentaire","price":8500},{"id":182,"name":"Consultation en diététique/nutrition","price":8500},{"id":183,"name":"Consultation en physiothérapie/rééducation","price":10000},{"id":184,"name":"Consultation en santé mentale (psychologie/psychiatrie)","price":8500},{"id":185,"name":"Consultation gynécologique/obstétrique","price":8500},{"id":186,"name":"Consultation Orthodontique","price":8500},{"id":187,"name":"Consultation pédiatrique","price":8500},{"id":188,"name":"Consultation Rhumatologie","price":8500},{"id":189,"name":"Consultation Safe Femme(jour)","price":4000},{"id":190,"name":"Consultation Safe Femme(nuit et week-end)","price":6000},{"id":191,"name":"Consultation Spécialistes (nuit et week-end)","price":15000},{"id":192,"name":"Consultation traumatologie","price":8500},{"id":193,"name":"Consultation urologie","price":10000},{"id":194,"name":"Coproculture","price":8000},{"id":195,"name":"Coronarographie","price":450000},{"id":196,"name":"Coronarographie +Angioplastie","price":150000},{"id":197,"name":"Cortisolurie ou Cortisol libre (urines des 24 H)","price":35000},{"id":198,"name":"Cortisolémie 20h","price":25000},{"id":199,"name":"Cortisolémie 8h","price":25000},{"id":200,"name":"Crachats (recherche de BK)","price":3000},{"id":201,"name":"CRP (C Reactive Protein) : test quantitatif","price":6000},{"id":202,"name":"Créatine kinase CK-MB","price":8000},{"id":203,"name":"Créatinine","price":3000},{"id":204,"name":"Créatinine Phospho-kinase (CPK)","price":6000},{"id":205,"name":"Créatinine urinaire ou créatininurie des 24 H","price":4000},{"id":206,"name":"CTFS","price":6000},{"id":207,"name":"Culot urinaire","price":3000},{"id":208,"name":"Culot Urinaire : Schistosomes / Bilharzie","price":3000},{"id":209,"name":"Culot Urinaire : Trichomonas","price":3000},{"id":210,"name":"CURAM (Amoxicilline Clavulanique) inj 0.5 g","price":4300},{"id":211,"name":"CURAM (Amoxicilline Clavulanique) inj 1.2 g","price":4300},{"id":212,"name":"Curetage parodontal (par quadrant)","price":22500},{"id":213,"name":"CYFRA 21-1","price":36000},{"id":214,"name":"D-Dimeres","price":15000},{"id":215,"name":"De nuit et jours fériés","price":17000},{"id":216,"name":"Dehydroepiandrosterone sulfate","price":23000},{"id":217,"name":"Densité urinaire","price":2000},{"id":218,"name":"Dent ectopique incluse (ex: couronnée, sinus, menton, branche montante, bord basilaire)","price":112000},{"id":219,"name":"Dents lactéales: Groupe incisivo-canin","price":15000},{"id":220,"name":"Dents lactéales: Groupe molaire","price":22500},{"id":221,"name":"Dents permanentes: Groupe incisivo-canin","price":30000},{"id":222,"name":"Dents permanentes: Groupe molaire","price":52500},{"id":223,"name":"Dents permanentes: Groupe prémolaire","price":37500},{"id":224,"name":"Des procès alvéolaires avec conservation des dents mobiles ou déplacées","price":75000},{"id":225,"name":"Deuxième année","price":75000},{"id":226,"name":"DEXAMETHASONE (DEXAMETHASONE) 4MG/ML Inj","price":1300},{"id":227,"name":"Diazépam inj de 10 mg/ml","price":850},{"id":228,"name":"DICLOFENAC  75 (DICLOFENAC) 75mg Inj","price":850},{"id":229,"name":"Dislep (LEVOSULPIRIDE) 25 mg Inj","price":1500},{"id":230,"name":"Dosage de Facteur de la coagulation (1)","price":12000},{"id":231,"name":"Dosage de Folates Plasmatiques","price":25000},{"id":232,"name":"Dosage de la thyroxine Binding Globulin","price":28000},{"id":233,"name":"Dosage du Facteurs rhumatoïdes (FR)","price":5000},{"id":234,"name":"Dosage du Facteurs Rhumatoïdes (Latex + WAALER ROSE)","price":10000},{"id":235,"name":"Dosage GH (Hormone de croissance)","price":31000},{"id":236,"name":"Dosage HTLV 1 +2 (dépistage)","price":22000},{"id":237,"name":"Dosage IgE Chien et Chat","price":56000},{"id":238,"name":"Dosage IgE spécifiques : Arachide","price":28000},{"id":239,"name":"Dosage IgE spécifiques : Blatte","price":28000},{"id":240,"name":"Dosage IgE spécifiques : Chat","price":28000},{"id":241,"name":"Dosage IgE spécifiques : Chien","price":28000},{"id":242,"name":"Dosage IgE spécifiques : Crevettes","price":28000},{"id":243,"name":"Dosage IgE spécifiques : DP + DF","price":56000},{"id":244,"name":"Dosage IgE spécifiques : Oeuf","price":28000},{"id":245,"name":"Dosage IgE Totales","price":16000},{"id":246,"name":"Dosage IGF-1","price":30000},{"id":247,"name":"Dosage IGF-2","price":48000},{"id":248,"name":"Dosage IGF-BP3","price":30000},{"id":249,"name":"Dosage Sélénium","price":34000},{"id":250,"name":"Dosage Transferrine ou Sidérophylline","price":6000},{"id":251,"name":"Dosage Triglycérides","price":4600},{"id":252,"name":"Dosage Troponine I","price":16000},{"id":253,"name":"Dosage Urines du 1er Jet","price":8000},{"id":254,"name":"Dosage Urée ou Azotémie","price":2000},{"id":255,"name":"Dosage Urée urinaire (urines de 24 H)","price":4000},{"id":256,"name":"Dosage Vaporate de Sodium ou Déparkinémie","price":25000},{"id":257,"name":"Dosage Vitamine A","price":33000},{"id":258,"name":"Dosage Vitamine B1","price":33000},{"id":259,"name":"Dosage Vitamine B12","price":15000},{"id":260,"name":"Dosage Vitamine B12 + Folates","price":15000},{"id":261,"name":"Dosage Vitamine B6","price":33000},{"id":262,"name":"Dosage Vitamine D - 25 Dihydroxy (25 OH) ou D2 / D3","price":35000},{"id":263,"name":"Dosage Vitamine E","price":33000},{"id":264,"name":"Dosage VMA","price":25000},{"id":265,"name":"Dosage Zinc","price":25500},{"id":266,"name":"Drainage d’une cellulite perimaxillaire","price":21000},{"id":267,"name":"Du corps maxillaire","price":75000},{"id":268,"name":"Dycinone 250mg Inj","price":1500},{"id":269,"name":"Dye test ou Toxoplasmose (IgG + IgM)","price":15000},{"id":270,"name":"Détartrage complet","price":22500},{"id":271,"name":"EBV","price":45000},{"id":272,"name":"EBV AC-ANTI EBNA+AC ANTI VCA (IgG)","price":35000},{"id":273,"name":"EBV AC-ANTI VCA(IgM)","price":23500},{"id":274,"name":"EBV ANTI-VCA (IgA)","price":27500},{"id":275,"name":"ECB du pus et autres sérosités + ATBG","price":8000},{"id":276,"name":"ECBU / Uroculture","price":8000},{"id":277,"name":"ECBU+ ATBG","price":8000},{"id":278,"name":"Echo-Doppler du cœur","price":30000},{"id":279,"name":"Echo-Doppler Membre Inferieur","price":35000},{"id":280,"name":"Echographie  Abdominale","price":14000},{"id":281,"name":"Echographie  Cardiaque","price":30000},{"id":282,"name":"Echographie  Cervical / Thyroïde / Parotide / Sous maxillaire","price":16000},{"id":283,"name":"Echographie  Obstétrique (Morphologique / 3D)","price":12000},{"id":284,"name":"Echographie  Oculaire","price":16000},{"id":285,"name":"Echographie  Prostatique/ vesico-prostatique","price":16000},{"id":286,"name":"Echographie  Thoracique","price":16000},{"id":287,"name":"Echographie  Thyroïdienne","price":16000},{"id":288,"name":"Echographie  Trans fontanellaire","price":16000},{"id":289,"name":"Echographie Abdomino pelvienne","price":16000},{"id":290,"name":"Echographie Doppler (Trans cârien/ Troncs supra aortiques)","price":30000},{"id":291,"name":"Echographie Hépatique","price":16000},{"id":292,"name":"Echographie Mammaire","price":16000},{"id":293,"name":"Echographie Obstétrique (1er, 2e et 3e trimestre)","price":7000},{"id":294,"name":"Echographie parties molles","price":16000},{"id":295,"name":"Echographie Pelvienne","price":7000},{"id":296,"name":"Echographie Rénale / Vésicale","price":16000},{"id":297,"name":"Echographie Testiculaire","price":16000},{"id":298,"name":"Electrocardiogramme (ECG)","price":12000},{"id":299,"name":"Electrophorèse de l’hémoglobine","price":7000},{"id":300,"name":"Electrophorèse des lipoprotéines","price":37000},{"id":301,"name":"Electrophorèse des protides (Protodogramme)","price":9000},{"id":302,"name":"Electrophorèse des protéines urinaires (Immunofixation)","price":25000},{"id":303,"name":"Enoxa 4000 UI Inj","price":7500},{"id":304,"name":"Enoxa 6000 UI Inj","price":9500},{"id":305,"name":"Enoxa 8000 UI Inj","price":11000},{"id":306,"name":"Enzyme de Conversion de l’Angiotensine (ECA)","price":23000},{"id":307,"name":"Epininéphrine ou Adrénaline inj 1 mg/ml.","price":1200},{"id":308,"name":"Episiotomie lors d'Accouchement -Medecin","price":90000},{"id":309,"name":"Episiotomie lors d'Accouchement sage femme","price":60000},{"id":310,"name":"Epreuve d'effort","price":60000},{"id":311,"name":"Epreuve de Compatibilité Sanguine par poche","price":4500},{"id":312,"name":"Erythropoïétine","price":30000},{"id":313,"name":"EXACYL(Acide tranexamique) inj 100 mg/ml.","price":3600},{"id":314,"name":"Examen Approfondit + Consultation Néonatologie","price":15000},{"id":315,"name":"EXAMEN AUDIOMETRIQUE TONAL ET VOCAL","price":18000},{"id":316,"name":"Examen Cytobactériologique des crachats (ECB Crachats)","price":8000},{"id":317,"name":"Examen mycologique (sans antifongigramme)","price":8000},{"id":318,"name":"Exanguino transfusion","price":10000},{"id":319,"name":"Expertise dentaire: (à but médico-légal lors des accidents de travail)","price":30000},{"id":320,"name":"Extraction de la dent de sagesse","price":42000},{"id":321,"name":"Extraction d’une dent de lait","price":11200},{"id":322,"name":"Extraction d’une dent enclavée","price":70000},{"id":323,"name":"Extraction d’une dent incluse","price":70000},{"id":324,"name":"Extraction d’une dent permanente","price":22400},{"id":325,"name":"Extraction, Traitement radiculaire, Réimplantation et contention d’une dent","price":140000},{"id":326,"name":"Facteur anti-hémophilique A (facteur VIII C)","price":20000},{"id":327,"name":"Facteur anti-hémophilique B (facteur IX)","price":20000},{"id":328,"name":"Facteur V de Leiden","price":42000},{"id":329,"name":"Fer sérique","price":5000},{"id":330,"name":"Ferritine","price":15000},{"id":331,"name":"Fibrinémie ou Fibrinogène","price":6000},{"id":332,"name":"Fibroscopie - Gastrocopie","price":40000},{"id":333,"name":"Fibroscopie - Gastrocopie + biopsie","price":65000},{"id":334,"name":"Fibrotest-Actitest","price":75000},{"id":335,"name":"FLAGYL 500MG/ML SOL INJ","price":1300},{"id":336,"name":"Frottis cervico-vaginal (FCV)","price":15000},{"id":337,"name":"Fructosamine","price":18000},{"id":338,"name":"Frénectomie","price":52500},{"id":339,"name":"FSH","price":16000},{"id":340,"name":"FT3","price":16000},{"id":341,"name":"FT4","price":16000},{"id":342,"name":"G-CEFTRIA 1000 (Ceftriaxone sodium) 1 g Inj","price":2800},{"id":343,"name":"Gamma GT (Gamma Glutamyl Tranférase ou GGT)","price":4000},{"id":344,"name":"GANT CHIR LATEX STERILE LABELL 7.5","price":700},{"id":345,"name":"GASPRAL (Omeprazole) 40mg Inj","price":3100},{"id":346,"name":"GENTAMICINE (GENTAMICINE) 40mg Inj","price":700},{"id":347,"name":"GENTAMICINE TM (GENTAMICINE) 80mg Inj","price":700},{"id":348,"name":"Germectomie","price":56000},{"id":349,"name":"Gingivectomie (par quadrant)","price":22500},{"id":350,"name":"Glucose-6-Phosphate déshydrogénase  G6PD","price":19000},{"id":351,"name":"Glycémie capillaire","price":1500},{"id":352,"name":"Glycémie Post Pandiale (G.P.P)","price":2000},{"id":353,"name":"Glycémie veineuse à jeun","price":2000},{"id":354,"name":"Goutte épaisse (GE) + Frottis","price":2000},{"id":355,"name":"Gouttière occlusale","price":210000},{"id":356,"name":"Groupe sanguin ABO/Rhésus","price":2500},{"id":357,"name":"HALOPERIDOL (HALOPERIDOL) inj 5 mg/ml","price":900},{"id":358,"name":"Haptoglobine","price":25000},{"id":359,"name":"HEMATIE-LEUCOCYTE-MINUTE (HLM) ou Compte d’ADDIS","price":5000},{"id":360,"name":"HIV / Sérologie rétrovirale / SRV","price":12000},{"id":361,"name":"HOLTER ECG","price":40000},{"id":362,"name":"HOLTER TENSION ARTÉRIELLE (MAPA)","price":40000},{"id":363,"name":"Homocystéine","price":20000},{"id":364,"name":"Hormone anti Mullérienne (AMH)","price":32000},{"id":365,"name":"Hospitalisation 1e Categorie (VIP)","price":25000},{"id":366,"name":"Hospitalisation 2e Categorie","price":15000},{"id":367,"name":"Hospitalisation 3e Categorie","price":10000},{"id":368,"name":"HYDROCORTISONE BIOCODEX (Hydrocortisone) inj 100 mg.","price":2100},{"id":369,"name":"Hyperglycémie provoquée par voie orale (H.G.P.O.)","price":15000},{"id":370,"name":"Hyperglycémie provoquée par voie parentérale (HGPP)","price":25000},{"id":371,"name":"Hémoglobine glyquée / Hémoglobine glycosylée (Hb A1C)","price":12000},{"id":372,"name":"Hépatite A IgG","price":20000},{"id":373,"name":"Hépatite A IgM (HAM)","price":18000},{"id":374,"name":"Hépatite B : Ag Hbe","price":20000},{"id":375,"name":"Hépatite B : Ag HBs (Antigène Australia)","price":6000},{"id":376,"name":"Hépatite B : Anticorps anti-HBc","price":16000},{"id":377,"name":"Hépatite B : Anticorps anti-HBc IgM","price":16000},{"id":378,"name":"Hépatite B : Anticorps anti-HBe","price":16000},{"id":379,"name":"Hépatite B : Anticorps anti-HBs","price":16000},{"id":380,"name":"Hépatite B : Charge virale","price":28000},{"id":381,"name":"Hépatite B Anti HBc Total","price":16000},{"id":382,"name":"Hépatite B Anti HBe","price":20000},{"id":383,"name":"Hépatite C : ARN Viral (recherche qualitative)","price":55600},{"id":384,"name":"Hépatite C : Charge virale Contrôle","price":112000},{"id":385,"name":"Hépatite C : Génotypage","price":81500},{"id":386,"name":"Hépatite C : Génotypage","price":82000},{"id":387,"name":"Hépatite C : Sérologie (Test rapide)","price":16000},{"id":388,"name":"Hépatite C : test de confirmation","price":16000},{"id":389,"name":"Hépatite C : Test de validation ELISA","price":30664},{"id":390,"name":"Hépatite C Anticorps anti HCV","price":6000},{"id":391,"name":"Imagerie I Biopsie scano guidée","price":150000},{"id":392,"name":"Imagerie I Biopsie écho guidée (Sein / Foie / Autres)","price":100000},{"id":393,"name":"Imagerie I Macrobiopsie au mammotome","price":150000},{"id":394,"name":"Imagerie I Ponction d’abcès (Hépatique / Autres)","price":60000},{"id":395,"name":"Imagerie I Pose d’un harpon","price":50000},{"id":396,"name":"Imagerie I Recanalisation tubaire","price":250000},{"id":397,"name":"Immunofixation protéines sériques","price":48000},{"id":398,"name":"Immunoglobuline (IGg IGm)","price":35000},{"id":399,"name":"Immunoglobuline E","price":35000},{"id":400,"name":"Inhibine B","price":35000},{"id":401,"name":"INSULINE ACTRAPID (Insuline Rapide) inj 100 UI/ml","price":5350},{"id":402,"name":"Insuline G Factor 1 (IGF 1)","price":30000},{"id":403,"name":"Insuline G Factor 2 ou IGF 2","price":36000},{"id":404,"name":"INSULINE MIXTARD (Insuline Mixte) inj 100 UI/ml","price":5600},{"id":405,"name":"Iodures urinaires (ou ioduries)","price":27000},{"id":406,"name":"Ionogramme Sanguin (Na + K + Cl)","price":12000},{"id":407,"name":"Ionogramme urinaire (Na + Cl + K) urines des 24 H","price":14000},{"id":408,"name":"IRM 1 région","price":160000},{"id":409,"name":"IRM 2 régions contiguës","price":240000},{"id":410,"name":"IRM 2 régions non contiguës","price":300000},{"id":411,"name":"IRM Injection 1 dose","price":60000},{"id":412,"name":"K Anesthesie","price":1100},{"id":413,"name":"K Bloc Operatoire","price":1500},{"id":414,"name":"K Chirurgicale","price":1100},{"id":415,"name":"K Specialité","price":1100},{"id":416,"name":"KCL (Chlorure de potasium) 10% SOL INJ","price":800},{"id":417,"name":"Lactate Déshydrogénase (L.D.H.)","price":10000},{"id":418,"name":"Lactico-déshydrogenase LDH","price":8000},{"id":419,"name":"LASILIX (Furosémide) 20mg Inj B1","price":1300},{"id":420,"name":"LCR : Cytologie + Chimie","price":6000},{"id":421,"name":"Leptospirose","price":35000},{"id":422,"name":"Leucocytes sanguins","price":7000},{"id":423,"name":"LH","price":16000},{"id":424,"name":"Ligature métallique","price":60000},{"id":425,"name":"Lipase (Lipasémie)","price":15000},{"id":426,"name":"Liquide Articulaire : Cytologie + Chimie","price":6000},{"id":427,"name":"Liquide d'Ascite : Cytologie + Chimie","price":6000},{"id":428,"name":"Liquide Pleural : Cytologie + Chimie","price":6000},{"id":429,"name":"Lithiémie","price":18000},{"id":430,"name":"Localisée","price":11200},{"id":431,"name":"Location Bloc Operatoire","price":35000},{"id":432,"name":"Location de salle d'accouchement","price":30000},{"id":433,"name":"LOMAC (Omeprazole) 40mg Inj","price":3100},{"id":434,"name":"LOXEN (Nicardipine) inj 10","price":3000},{"id":435,"name":"Lyme IgG ou IgM","price":22000},{"id":436,"name":"Lyme Test contrôle (IgG ou IgM) W Blot","price":46000},{"id":437,"name":"Magnesium","price":4000},{"id":438,"name":"Magnésium Sérique","price":4000},{"id":439,"name":"MESPORIN (Ceftriaxone sodium) 1 g Inj","price":2800},{"id":440,"name":"Microalbuminurie ou proteinurie des 24 H","price":14000},{"id":441,"name":"MICROPREFUSEUR (épicrannienne)Intraflon- Catether","price":300},{"id":442,"name":"MICROPREFUSEUR/ Epiveine (épicrannienne)","price":300},{"id":443,"name":"MIDAZOLAM 1MG INJ","price":1950},{"id":444,"name":"MIDAZOLAM 5MG INJ","price":2975},{"id":445,"name":"Mononucléose infectieuse (MNI test)","price":10000},{"id":446,"name":"MORPHINE CHLOR (Morphine) inj 10 mg","price":4500},{"id":447,"name":"Moulage","price":30000},{"id":448,"name":"Myoglobine","price":23000},{"id":449,"name":"Myélogramme","price":5000},{"id":450,"name":"Métanéphrines plasmatiques","price":38000},{"id":451,"name":"Métanéphrines urinaires : urines des 24 H","price":38000},{"id":452,"name":"Métoclopramide 80  inj 10 mg","price":1100},{"id":453,"name":"NFS complète (Hemogramme avec plaquettes sanguines)","price":6000},{"id":454,"name":"NFS Complète (Hemogramme) + Réticulocytes","price":12000},{"id":455,"name":"NFS Complète (Hémogramme)","price":6000},{"id":456,"name":"Nitrites","price":2000},{"id":457,"name":"NSE","price":30000},{"id":458,"name":"Numération des Plaquettes sanguines","price":7000},{"id":459,"name":"Numération des Plaquettes sanguines (Plaquettes/thrombocytes)","price":12000},{"id":460,"name":"Obturation dentaire: Cavité complexe (avec tenon)","price":45000},{"id":461,"name":"Obturation dentaire: Cavité composée (02 faces)","price":22500},{"id":462,"name":"Obturation dentaire: Cavité composée (03 faces)","price":30000},{"id":463,"name":"Obturation dentaire: Cavité simple (01 face)","price":15000},{"id":464,"name":"Obturation dentaire: Scellement des sillons","price":15000},{"id":465,"name":"Oestriol (sang)","price":20000},{"id":466,"name":"Ordinaire (heures ouvrables normales)","price":12500},{"id":467,"name":"Oxygénothérapie par heure","price":1350},{"id":468,"name":"Paludisme : test rapide + Parasitémie","price":1000},{"id":469,"name":"Paraceta-M (Paracetamol) 1g inj","price":1875},{"id":470,"name":"Parvovirus B19","price":52000},{"id":471,"name":"Peptide C","price":25000},{"id":472,"name":"Perfalgan (Paracetamol) 1g inj","price":1875},{"id":473,"name":"Perfalgan (Paracetamol) 500mg inj","price":1875},{"id":474,"name":"Perfuseur (Pefuseur) en PVC","price":400},{"id":475,"name":"Petit volume","price":56000},{"id":476,"name":"PH urinaire","price":2000},{"id":477,"name":"Phosphatase acide prostatique","price":10000},{"id":478,"name":"Phosphatase acide totale","price":10000},{"id":479,"name":"Phosphatases Alcalines (P.A.L.)","price":4000},{"id":480,"name":"Phosphates urinaires ou Phosphaturie des 24 H","price":6000},{"id":481,"name":"Phosphaturie","price":2600},{"id":482,"name":"Phosphore (Phosphorémie)","price":4000},{"id":483,"name":"Pigments biliaires dans urines","price":2000},{"id":484,"name":"Planning familial (Sayana)","price":3500},{"id":485,"name":"Plomb : dosage sanguin","price":23000},{"id":486,"name":"POLYDEXA (DEXAMETHASONE + NEOMYCINE+POLYMYXINE B) 4MG/ML Inj","price":2100},{"id":487,"name":"Pose de DIU","price":10000},{"id":488,"name":"Potassium (Kaliémie)","price":4000},{"id":489,"name":"Première année","price":112500},{"id":490,"name":"Profenid (KETOPROFENE) 100mg Inj","price":1950},{"id":491,"name":"Progestérone","price":16000},{"id":492,"name":"Prolactine ou PRL","price":16000},{"id":493,"name":"PROPOFOL - FRESENIUS/LIPURO- (Propofol) 10 mg Inj","price":2100},{"id":494,"name":"Prothèse Attelle de Contention","price":105000},{"id":495,"name":"Prothèse en résine (1 dent)","price":45000},{"id":496,"name":"Protéine C","price":28500},{"id":497,"name":"Protéine de Bence Jones : urines des 24 H","price":47000},{"id":498,"name":"Protéine S","price":30000},{"id":499,"name":"Protéines Totales ou Protidémie","price":4000},{"id":500,"name":"Protéinurie des 24 H","price":6000},{"id":501,"name":"PSA Libre","price":37000},{"id":502,"name":"PSA ratio (rapport L/T)","price":20000},{"id":503,"name":"PSA Total","price":15000},{"id":504,"name":"PTH","price":26000},{"id":505,"name":"Pulpotomie","price":15000},{"id":506,"name":"Pyruvate kinase (dosage de l'activité)","price":19000},{"id":507,"name":"QBC","price":5500},{"id":508,"name":"Quinine 600 mg Inj","price":700},{"id":509,"name":"Radiographie  Articulations temporo-mandibulaires","price":20000},{"id":510,"name":"Radiographie  Bassin + Hanche","price":14000},{"id":511,"name":"Radiographie  Bassin Face","price":7000},{"id":512,"name":"Radiographie  Charnière rachidienne (C7-T1, T12-L1, L5-S1)","price":4000},{"id":513,"name":"Radiographie  Deux régions contiguës","price":14000},{"id":514,"name":"Radiographie  Deux régions non contiguës","price":21000},{"id":515,"name":"Radiographie  Fistulographie","price":23000},{"id":516,"name":"Radiographie  Gril costal","price":10000},{"id":517,"name":"Radiographie  Génitographie","price":23000},{"id":518,"name":"Radiographie  HSG (Hystero-salpingographie)","price":27000},{"id":519,"name":"Radiographie  Lavement baryté","price":25000},{"id":520,"name":"Radiographie  Myélographie","price":45000},{"id":521,"name":"Radiographie  Panoramique dentaire","price":25000},{"id":522,"name":"Radiographie  Rachis cervical (F/P + 3/4)","price":14000},{"id":523,"name":"Radiographie  Rachis cervical (F/P)","price":7000},{"id":524,"name":"Radiographie  Rachis cervico dorsal (F/P)","price":14000},{"id":525,"name":"Radiographie  Rachis cervico-dorso-lombaire","price":21000},{"id":526,"name":"Radiographie  Rachis dorsal (F/P)","price":7000},{"id":527,"name":"Radiographie  Rachis dorso lombaire","price":14000},{"id":528,"name":"Radiographie  Rachis lombaire (F/P)","price":7000},{"id":529,"name":"Radiographie  Saccoradiculographie","price":40000},{"id":530,"name":"Radiographie  Sacrum","price":8000},{"id":531,"name":"Radiographie  Sternum","price":7000},{"id":532,"name":"Radiographie  Thorax","price":7000},{"id":533,"name":"Radiographie  Thorax F/P","price":7000},{"id":534,"name":"Radiographie  TOGD","price":30000},{"id":535,"name":"Radiographie  Transit du grêle","price":25000},{"id":536,"name":"Radiographie  Transit œsophagien","price":25000},{"id":537,"name":"Radiographie  UCR","price":30000},{"id":538,"name":"Radiographie  UIV","price":25000},{"id":539,"name":"Radiographie Arthrographie (Poignet / Coude / Epaule / Genou / Hanche / Cheville)","price":50000},{"id":540,"name":"Radiographie Articulation acromio-claviculaire","price":8500},{"id":541,"name":"Radiographie Articulation sterno-claviculaire","price":8500},{"id":542,"name":"Radiographie ASP (Abdomen Sans Preparation)","price":7000},{"id":543,"name":"Radiographie Avant-bras","price":7000},{"id":544,"name":"Radiographie Blondeau / Cavum","price":7000},{"id":545,"name":"Radiographie Bras, Humérus","price":7000},{"id":546,"name":"Radiographie Bronchographie","price":45000},{"id":547,"name":"Radiographie Calcanéus","price":7000},{"id":548,"name":"Radiographie Cavum","price":7000},{"id":549,"name":"Radiographie Cheville","price":7000},{"id":550,"name":"Radiographie Cholangiographie","price":70000},{"id":551,"name":"Radiographie Clavicule","price":7000},{"id":552,"name":"Radiographie Contenu utérin","price":20000},{"id":553,"name":"Radiographie Coude","price":7000},{"id":554,"name":"Radiographie Crâne, Massif facial","price":7000},{"id":555,"name":"Radiographie Cuisse / Fémur","price":7000},{"id":556,"name":"Radiographie Deux segments contigus","price":7000},{"id":557,"name":"Radiographie Deux segments non contigus","price":14000},{"id":558,"name":"Radiographie Doigt","price":7000},{"id":559,"name":"Radiographie Epaule","price":7000},{"id":560,"name":"Radiographie Galactographie","price":30000},{"id":561,"name":"Radiographie Genou","price":7000},{"id":562,"name":"Radiographie Hanche (F/2P)","price":14000},{"id":563,"name":"Radiographie Hanche (F/P)","price":7000},{"id":564,"name":"Radiographie Hystero-salpingographie Incluant l'Abdomen sans preparation","price":30000},{"id":565,"name":"Radiographie Incidence complémentaire","price":3500},{"id":566,"name":"Radiographie Jambe – Tibia","price":7000},{"id":567,"name":"Radiographie Main","price":7000},{"id":568,"name":"Radiographie Os propre du nez","price":7000},{"id":569,"name":"Radiographie Pangonogramme","price":16000},{"id":570,"name":"Radiographie Pied – Orteils","price":7000},{"id":571,"name":"Radiographie Poignet","price":7000},{"id":572,"name":"Radiographie Radiopelvimétrie","price":20000},{"id":573,"name":"Radiographie rétro-alvéolaire (1-3 dents)","price":25000},{"id":574,"name":"Recherche Antigène Solubles  : Aspergillus (Aspergillose)","price":33000},{"id":575,"name":"Recherche de cellules LE (Frottis sanguin)","price":10000},{"id":576,"name":"Recherche de microfilaires sanguicoles","price":7000},{"id":577,"name":"Recherche de Sang dans Selles","price":7000},{"id":578,"name":"Recherche des Anguillules : SELLES","price":4000},{"id":579,"name":"Retinol Binding Protein (RBP)","price":18000},{"id":580,"name":"Retrait d'implant","price":10000},{"id":581,"name":"Rickettsiose","price":26000},{"id":582,"name":"Ringer Lactate FL/500 ml  Inj","price":1000},{"id":583,"name":"Rotavirus dans les SELLES","price":6000},{"id":584,"name":"ROXONE PLUS 1000/500 (Ceftriaxone +Sulbactam)  1 g/0.5 Inj","price":4500},{"id":585,"name":"Rubéole (IgG + IgM)","price":16000},{"id":586,"name":"Réanimation nouveau né-enfant","price":35000},{"id":587,"name":"Récepteur soluble à la Transferrine","price":16000},{"id":588,"name":"Rénine plasmatique","price":31000},{"id":589,"name":"Résection de capuchon muqueux","price":30000},{"id":590,"name":"Réserve Alcaline : RA ou CO2 total ou PaCO2","price":5000},{"id":591,"name":"Résistance à la Protéine C","price":38500},{"id":592,"name":"Réticulocytes","price":6500},{"id":593,"name":"Salbutamol 0,5 mg Inj","price":750},{"id":594,"name":"Salle de réanimation (adulte)-Tout compris","price":120000},{"id":595,"name":"Scotch Test anal (Scotch test Graham) : Recherche des Oxyures","price":3500},{"id":596,"name":"Sejour en couveuse","price":15000},{"id":597,"name":"Selles KOP ou Coprologie des selles","price":2500},{"id":598,"name":"Seringue 10ml","price":100},{"id":599,"name":"Seringue 2,5 ml","price":100},{"id":600,"name":"Seringue 5ml","price":100},{"id":601,"name":"Seringue Insuline","price":400},{"id":602,"name":"Serologie Mycosique Aspergillus (Aspergillose)","price":33000},{"id":603,"name":"SERUM Bicarbonate de sodium 1,4 % perfusion","price":1000},{"id":604,"name":"SERUM SALE 0,9 % perfusion","price":1000},{"id":605,"name":"SGH 10% 500ml","price":1000},{"id":606,"name":"SGI 5% 500ml","price":1000},{"id":607,"name":"Simultanée des deux maxillaires","price":225000},{"id":608,"name":"Sodium ou Natrémie (Na)","price":4000},{"id":609,"name":"Spasfon 40mg Inj","price":1000},{"id":610,"name":"Spermiogramme fractionné","price":15000},{"id":611,"name":"Spermiogramme/ Spermogramme","price":7000},{"id":612,"name":"Spermoculture : germes banals","price":7000},{"id":613,"name":"Spermoculture : recherche de Chlamydiae","price":11000},{"id":614,"name":"Spermoculture : recherche de Mycoplasmes","price":11000},{"id":615,"name":"Spécialisée","price":17000},{"id":616,"name":"Spécialisées de nuit et jours fériés","price":11500},{"id":617,"name":"Sucre ou Glucose : Urines","price":2000},{"id":618,"name":"Suveillance ambulatoire-Journée d'observation","price":6000},{"id":619,"name":"SYNTOCINON (Ocytocine) Inj 5UI/ML VRAC","price":700},{"id":620,"name":"Sérodiagnostic de Widal et Felix","price":6000},{"id":621,"name":"Sérologie amibienne","price":16000},{"id":622,"name":"Sérologie bilharzienne (1ère / 2ème détermination)","price":26000},{"id":623,"name":"Sérologie bilharzienne (confirmation Western blot)","price":46000},{"id":624,"name":"Sérologie Cysticercose (1ère / 2ème détermination)","price":28000},{"id":625,"name":"Sérologie Cysticercose (confirmation Western blot)","price":46000},{"id":626,"name":"Sérologie de la Dengue IgG (IgG 1ère / 2ème détermination)","price":29000},{"id":627,"name":"Sérologie de la rubéole (IgG + IgM)","price":16000},{"id":628,"name":"Sérologie de la toxoplasmose (IgG + IgM)","price":16000},{"id":629,"name":"Sérologie Herpès","price":48000},{"id":630,"name":"Sérologie HIV","price":4000},{"id":631,"name":"Sérologie HTLV (confirmation)","price":44000},{"id":632,"name":"Sérologie HTLV (dépistage)","price":22000},{"id":633,"name":"Sérologie Leishmaniose (1ère / 2ème détermination)","price":26000},{"id":634,"name":"Sérologie palustre","price":12000},{"id":635,"name":"Tanganil Inj","price":700},{"id":636,"name":"Taux de Prothrombine / TP","price":5000},{"id":637,"name":"TDM Abdomino pelvienne","price":90000},{"id":638,"name":"TDM Angio TDM (Thorax / Cérébrale)","price":90000},{"id":639,"name":"TDM Articulaire","price":70000},{"id":640,"name":"TDM Cou / Larynx","price":90000},{"id":641,"name":"TDM Cérébrale","price":70000},{"id":642,"name":"TDM Massif facial","price":70000},{"id":643,"name":"TDM Membre","price":80000},{"id":644,"name":"TDM Pelvienne, Prostate","price":70000},{"id":645,"name":"TDM Rachis (Cervical / Dorsal / Lombaire)","price":90000},{"id":646,"name":"TDM Rochers","price":70000},{"id":647,"name":"TDM Thoraco abdomino pelvienne","price":120000},{"id":648,"name":"TDM Thorax","price":80000},{"id":649,"name":"Temps de Céphaline activé  (TCA) + Temps de saignement (TS)","price":5000},{"id":650,"name":"Temps de Céphaline activé ou Kaolin (TCA ou TCK)","price":5000},{"id":651,"name":"Temps de Howell (TH)","price":4000},{"id":652,"name":"Temps de Quick (TQ)","price":5000},{"id":653,"name":"Temps de saignement (TS)","price":2500},{"id":654,"name":"Temps de thrombine (TT)","price":6000},{"id":655,"name":"Test d'Emmel","price":2000},{"id":656,"name":"Test de compatibilité - Sang","price":2500},{"id":657,"name":"Test de Coombs Direct","price":8000},{"id":658,"name":"Test de Coombs Indirect","price":10000},{"id":659,"name":"Test de HUHNER","price":10000},{"id":660,"name":"Testostérone libre","price":22000},{"id":661,"name":"Testostérone totale (homme, femme, enfant)","price":16000},{"id":662,"name":"Thyroglobuline HTG","price":30000},{"id":663,"name":"Thyroglobuline sérique","price":28000},{"id":664,"name":"TP + INR","price":7000},{"id":665,"name":"TPHA + VDRL","price":7000},{"id":666,"name":"Trabar (Tramadol) 100mg Inj","price":900},{"id":667,"name":"Traitement d’un hémorragie post-opératoire","price":14000},{"id":668,"name":"Traitement d’une pseudo-arthrose","price":150000},{"id":669,"name":"Traitement sur une période de six mois","price":225000},{"id":670,"name":"Traitement sur une période de six mois","price":502500},{"id":671,"name":"Tramadol Inj","price":900},{"id":672,"name":"Transaminase : S.G.O.T / A.S.A.T.","price":2600},{"id":673,"name":"Transaminase : S.G.P.T / A.L.A.T.","price":2600},{"id":674,"name":"Transaminases (ALAT + ASAT) ou (S.G.O.T. + S.G.P.T.)","price":5000},{"id":675,"name":"Transfusion massive (sup 3L)","price":10000},{"id":676,"name":"Transfusion sanguine","price":4000},{"id":677,"name":"Trisomie 21 foetale marqueurs sériques maternels (1er trimestre)","price":75000},{"id":678,"name":"Téléconsultation","price":20000},{"id":679,"name":"Unité de surveillance","price":35000},{"id":680,"name":"VIH Charge virale (ARN VIH 1)","price":58000},{"id":681,"name":"Visite de jour Medecin Gene Externe deplacement","price":15000},{"id":682,"name":"Visite de jour Medecin Specialiste Externe deplacement","price":20000},{"id":683,"name":"Visite de nuit Medecin Gene Externe deplacement","price":15000},{"id":684,"name":"Visite de nuit Medecin Specialiste Externe deplacement","price":25000},{"id":685,"name":"Vitamine B Complexe (Becozyme) Inj","price":700},{"id":686,"name":"Vitamine B12 Inj","price":700},{"id":687,"name":"Vitamine C 500mg Inj","price":700},{"id":688,"name":"Vitamine K1 Inj","price":1000},{"id":689,"name":"Vitesse de sédimentation VS","price":3000},{"id":690,"name":"Vogalène (METOPIMAZINE) 10mg inj","price":600},{"id":691,"name":"Xylocaïne (Lidocaine) 1% Inj 10ml","price":2000},{"id":692,"name":"Xylocaïne (Lidocaine) 2% Inj 10ml","price":2000},{"id":693,"name":"Xylocaïne adrénaline 2% Inj 10ml","price":3500},{"id":694,"name":"Étendu à plus d’une dent","price":112000},{"id":695,"name":"Étendue à la crête d’un hémimaxillaire ou de canine à canine","price":21000},{"id":696,"name":"Étendue à la totalité de la crête","price":42000}];
+const STORAGE_KEY = "cfl_facture_current_v2";
+const PENDING_KEY = "cfl_pending_invoices_v2";
+const CONFIG_KEY = "cfl_supabase_config_v2";
+const MAX_SUGGESTIONS = 16;
+let lineCount = 15;
+let activeIndex = -1;
+let currentInvoiceId = null;
+
+// -------- Config / Supabase client --------
+// Remplis ces deux constantes une fois pour toutes (facultatif : les Réglages
+// dans l'app permettent aussi de les saisir depuis l'écran, sans toucher au code).
+const DEFAULT_SUPA_URL = "";
+const DEFAULT_SUPA_KEY = "";
+
+function loadConfig() {
+  try {
+    const s = JSON.parse(localStorage.getItem(CONFIG_KEY) || "null");
+    if (s && s.url && s.key) return s;
+  } catch (e) {}
+  if (DEFAULT_SUPA_URL && DEFAULT_SUPA_KEY) return { url: DEFAULT_SUPA_URL, key: DEFAULT_SUPA_KEY };
+  return null;
+}
+
+let sb = null;
+let cfg = loadConfig();
+function initSupabase() {
+  if (cfg && window.supabase) {
+    try {
+      sb = window.supabase.createClient(cfg.url, cfg.key);
+      subscribeRealtime();
+      flushPending();
+      refreshReleve();
+    } catch (e) { sb = null; }
+  }
+}
+initSupabase();
+
+// -------- Helpers --------
+const fmt = n => new Intl.NumberFormat('fr-FR').format(Number(n||0)) + " FCFA";
+const normalize = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8); return v.toString(16);
+}));
+
+function todayISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset()*60000;
+  return new Date(d - tz).toISOString().slice(0,10);
+}
+
+// -------- Line rendering / autocomplete (unchanged logic from the tablet version) --------
+function createRow(i) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td class="desc">
+      <input type="text" class="descInput" placeholder="Tapez une description...">
+      <div class="suggestions"></div>
+    </td>
+    <td class="qty"><input type="number" class="qtyInput" min="0" value="1" inputmode="numeric"></td>
+    <td class="price"><input type="text" class="priceInput money" readonly></td>
+    <td class="amount"><input type="text" class="amountInput money" readonly></td>
+  `;
+  bindRow(tr);
+  return tr;
+}
+
+function bindRow(tr) {
+  const input = tr.querySelector(".descInput");
+  const qty = tr.querySelector(".qtyInput");
+  input.addEventListener("focus", () => showSuggestions(tr));
+  input.addEventListener("input", () => {
+    tr.dataset.itemId = "";
+    showSuggestions(tr);
+    saveStateSoon();
+  });
+  input.addEventListener("keydown", e => {
+    const box = tr.querySelector(".suggestions");
+    const items = Array.from(box.querySelectorAll(".suggestion"));
+    if (!items.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); activeIndex = Math.min(activeIndex+1, items.length-1); paintActive(items); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); paintActive(items); }
+    else if (e.key === "Enter") { e.preventDefault(); if (items[activeIndex]) items[activeIndex].dispatchEvent(new Event("pointerdown")); }
+  });
+  qty.addEventListener("input", () => { updateRow(tr); saveStateSoon(); });
+}
+
+function paintActive(items) {
+  items.forEach((it,i) => it.classList.toggle("active", i===activeIndex));
+  if (items[activeIndex]) items[activeIndex].scrollIntoView({block:"nearest"});
+}
+
+function findMatches(query) {
+  const q = normalize(query);
+  if (!q) return [];
+  return CATALOG.filter(item => normalize(item.name).includes(q)).slice(0, MAX_SUGGESTIONS);
+}
+
+function showSuggestions(tr) {
+  const input = tr.querySelector(".descInput");
+  const box = tr.querySelector(".suggestions");
+  const matches = findMatches(input.value);
+  activeIndex = -1;
+  box.innerHTML = "";
+  if (!input.value.trim()) { box.style.display = "none"; return; }
+  if (!matches.length) {
+    box.innerHTML = `<div class="no-result">Aucune prestation trouvée</div>`;
+    box.style.display = "block";
+    return;
+  }
+  matches.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "suggestion";
+    div.innerHTML = `<span class="name">${item.name}</span><span class="price-tag">${fmt(item.price)}</span>`;
+    div.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      chooseItem(tr, item);
+    });
+    box.appendChild(div);
+  });
+  box.style.display = "block";
+}
+
+function chooseItem(tr, item) {
+  tr.dataset.itemId = item.id;
+  tr.querySelector(".descInput").value = item.name;
+  tr.querySelector(".priceInput").value = fmt(item.price);
+  tr.querySelector(".suggestions").style.display = "none";
+  updateRow(tr);
+  saveStateSoon();
+}
+
+function updateRow(tr) {
+  const priceText = tr.querySelector(".priceInput").value.replace(/[^\d]/g,"");
+  const price = Number(priceText || 0);
+  const qty = Number(tr.querySelector(".qtyInput").value || 0);
+  tr.querySelector(".amountInput").value = fmt(price*qty);
+  updateTotal();
+}
+
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll("#lines tr").forEach(tr => {
+    const amountText = tr.querySelector(".amountInput").value.replace(/[^\d]/g,"");
+    total += Number(amountText || 0);
+  });
+  document.getElementById("grandTotal").textContent = fmt(total);
+  return total;
+}
+
+document.addEventListener("pointerdown", e => {
+  document.querySelectorAll(".suggestions").forEach(box => {
+    if (!box.parentElement.contains(e.target)) box.style.display = "none";
+  });
+});
+
+// -------- State (current draft invoice) --------
+function collectLines() {
+  const lines = [];
+  document.querySelectorAll("#lines tr").forEach(tr => {
+    const desc = tr.querySelector(".descInput").value.trim();
+    const qty = Number(tr.querySelector(".qtyInput").value || 0);
+    const price = Number(tr.querySelector(".priceInput").value.replace(/[^\d]/g,"") || 0);
+    const amount = Number(tr.querySelector(".amountInput").value.replace(/[^\d]/g,"") || 0);
+    if (desc) lines.push({desc, qty, price, amount});
+  });
+  return lines;
+}
+
+function state() {
+  return {
+    id: currentInvoiceId,
+    date: document.getElementById("date").value,
+    invoiceNo: document.getElementById("invoiceNo").value,
+    nom: document.getElementById("nom").value,
+    prenom: document.getElementById("prenom").value,
+    sexe: document.getElementById("sexe").value,
+    age: document.getElementById("age").value,
+    contact: document.getElementById("contact").value,
+    periode: document.getElementById("periode").value,
+    words: document.getElementById("words").value,
+    lines: collectLines(),
+    total: updateTotal()
+  };
+}
+
+let saveTimer = null;
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state())); } catch(e) {}
+}
+function saveStateSoon() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 250);
+}
+
+function loadState() {
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); } catch(e) {}
+  document.getElementById("lines").innerHTML = "";
+  lineCount = 0;
+  if (s) {
+    currentInvoiceId = s.id || null;
+    ["date","invoiceNo","nom","prenom","sexe","age","contact","periode","words"].forEach(id => {
+      if (document.getElementById(id)) document.getElementById(id).value = s[id] || "";
+    });
+    (s.lines||[]).forEach(l => {
+      const tr = createRow(lineCount++);
+      document.getElementById("lines").appendChild(tr);
+      tr.querySelector(".descInput").value = l.desc;
+      tr.querySelector(".qtyInput").value = l.qty;
+      tr.querySelector(".priceInput").value = fmt(l.price);
+      tr.querySelector(".amountInput").value = fmt(l.amount);
+    });
+  }
+  while (lineCount < 15) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
+  if (!document.getElementById("date").value) document.getElementById("date").value = todayISO();
+  updateTotal();
+}
+
+["invoiceNo","nom","prenom","sexe","age","contact","periode","words","date"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("input", saveStateSoon);
+  if (el) el.addEventListener("change", saveStateSoon);
+});
+
+document.getElementById("addBtn").addEventListener("click", () => {
+  document.getElementById("lines").appendChild(createRow(lineCount++));
+});
+document.getElementById("printBtn").addEventListener("click", () => window.print());
+document.getElementById("newBtn").addEventListener("click", () => {
+  if (!confirm("Créer une nouvelle facture vierge ? La facture en cours affichée sera remplacée (elle reste dans le relevé si déjà enregistrée).")) return;
+  currentInvoiceId = null;
+  localStorage.removeItem(STORAGE_KEY);
+  loadState();
+});
+const help = document.getElementById("help");
+document.getElementById("helpBtn").addEventListener("click",()=>help.style.display="flex");
+document.getElementById("closeHelp").addEventListener("click",()=>help.style.display="none");
+help.addEventListener("pointerdown",e=>{ if(e.target===help) help.style.display="none"; });
+
+// -------- Settings modal --------
+const settingsModal = document.getElementById("settingsModal");
+function openSettings() {
+  document.getElementById("cfgUrl").value = cfg ? cfg.url : "";
+  document.getElementById("cfgKey").value = cfg ? cfg.key : "";
+  settingsModal.style.display = "flex";
+}
+document.getElementById("settingsBtn").addEventListener("click", openSettings);
+document.getElementById("closeSettings").addEventListener("click", () => settingsModal.style.display = "none");
+settingsModal.addEventListener("pointerdown", e => { if (e.target === settingsModal) settingsModal.style.display = "none"; });
+document.getElementById("saveSettingsBtn").addEventListener("click", () => {
+  const url = document.getElementById("cfgUrl").value.trim();
+  const key = document.getElementById("cfgKey").value.trim();
+  if (!url || !key) { document.getElementById("settingsMsg").textContent = "Merci de renseigner les deux champs."; return; }
+  cfg = { url, key };
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+  document.getElementById("settingsMsg").textContent = "Connexion en cours...";
+  initSupabase();
+  setTimeout(() => {
+    settingsModal.style.display = "none";
+    updateNetStatus();
+  }, 600);
+});
+
+// -------- Emettre / Enregistrer --------
+document.getElementById("emettreBtn").addEventListener("click", async () => {
+  const s = state();
+  if (!s.lines.length) { alert("Ajoutez au moins une prestation avant d'émettre la facture."); return; }
+  if (!s.id) s.id = uuid();
+  currentInvoiceId = s.id;
+  const record = {
+    id: s.id,
+    invoice_no: s.invoiceNo || null,
+    invoice_date: s.date || todayISO(),
+    patient_nom: s.nom || null,
+    patient_prenom: s.prenom || null,
+    patient_sexe: s.sexe || null,
+    patient_age: s.age ? Number(s.age) : null,
+    patient_contact: s.contact || null,
+    periode: s.periode || null,
+    lines: s.lines,
+    total: s.total,
+    montant_lettres: s.words || null
+  };
+  saveState();
+  await saveInvoice(record);
+  alert("Facture enregistrée" + (navigator.onLine && sb ? " et synchronisée." : ". Elle sera synchronisée automatiquement au retour du réseau."));
+});
+
+// -------- Supabase sync + offline queue --------
+function getPending() {
+  try { return JSON.parse(localStorage.getItem(PENDING_KEY) || "[]"); } catch(e) { return []; }
+}
+function setPending(list) {
+  localStorage.setItem(PENDING_KEY, JSON.stringify(list));
+  updateNetStatus();
+}
+function queuePending(record) {
+  const list = getPending().filter(r => r.id !== record.id);
+  list.push(record);
+  setPending(list);
+}
+function unqueuePending(id) {
+  setPending(getPending().filter(r => r.id !== id));
+}
+
+async function saveInvoice(record) {
+  if (!sb || !navigator.onLine) { queuePending(record); refreshReleve(); return; }
+  const { error } = await sb.from("invoices").upsert(record, { onConflict: "id" });
+  if (error) { queuePending(record); }
+  else { unqueuePending(record.id); }
+  refreshReleve();
+}
+
+async function flushPending() {
+  if (!sb || !navigator.onLine) return;
+  const list = getPending();
+  for (const record of list) {
+    const { error } = await sb.from("invoices").upsert(record, { onConflict: "id" });
+    if (!error) unqueuePending(record.id);
+  }
+  refreshReleve();
+}
+
+function subscribeRealtime() {
+  if (!sb) return;
+  sb.channel("invoices-changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "invoices" }, () => refreshReleve())
+    .subscribe();
+}
+
+// -------- Relevé des factures --------
+let releveCache = [];
+async function refreshReleve() {
+  let remote = [];
+  if (sb && navigator.onLine) {
+    try {
+      const { data, error } = await sb.from("invoices").select("*").order("created_at", { ascending: false }).limit(2000);
+      if (!error && data) remote = data;
+    } catch (e) {}
+  }
+  const pending = getPending();
+  const remoteIds = new Set(remote.map(r => r.id));
+  const merged = remote.map(r => ({...r, _pending:false}))
+    .concat(pending.filter(p => !remoteIds.has(p.id)).map(p => ({...p, _pending:true})));
+  merged.sort((a,b) => (b.invoice_date||"").localeCompare(a.invoice_date||""));
+  releveCache = merged;
+  renderReleve();
+}
+
+function renderReleve() {
+  const q = normalize(document.getElementById("searchReleve").value);
+  const from = document.getElementById("dateFrom").value;
+  const to = document.getElementById("dateTo").value;
+  let rows = releveCache.filter(r => {
+    if (q) {
+      const hay = normalize((r.patient_nom||"") + " " + (r.patient_prenom||"") + " " + (r.invoice_no||""));
+      if (!hay.includes(q)) return false;
+    }
+    if (from && r.invoice_date && r.invoice_date < from) return false;
+    if (to && r.invoice_date && r.invoice_date > to) return false;
+    return true;
+  });
+  const body = document.getElementById("releveBody");
+  body.innerHTML = "";
+  let total = 0;
+  rows.forEach(r => {
+    total += Number(r.total||0);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.invoice_date||""}</td>
+      <td>${r.invoice_no||""}</td>
+      <td>${(r.patient_nom||"")+" "+(r.patient_prenom||"")}</td>
+      <td>${r.patient_contact||""}</td>
+      <td class="money">${fmt(r.total)}</td>
+      <td><span class="tag ${r._pending?"pending":"synced"}">${r._pending?"En attente":"Synchronisée"}</span></td>
+      <td class="releve-actions">
+        <button class="secondary reopenBtn">Ouvrir</button>
+      </td>
+    `;
+    tr.querySelector(".reopenBtn").addEventListener("click", () => reopenInvoice(r));
+    body.appendChild(tr);
+  });
+  document.getElementById("statCount").textContent = rows.length + " facture(s)";
+  document.getElementById("statTotal").textContent = fmt(total);
+}
+
+function reopenInvoice(r) {
+  currentInvoiceId = r.id;
+  document.getElementById("date").value = r.invoice_date || "";
+  document.getElementById("invoiceNo").value = r.invoice_no || "";
+  document.getElementById("nom").value = r.patient_nom || "";
+  document.getElementById("prenom").value = r.patient_prenom || "";
+  document.getElementById("sexe").value = r.patient_sexe || "";
+  document.getElementById("age").value = r.patient_age || "";
+  document.getElementById("contact").value = r.patient_contact || "";
+  document.getElementById("periode").value = r.periode || "";
+  document.getElementById("words").value = r.montant_lettres || "";
+  document.getElementById("lines").innerHTML = "";
+  lineCount = 0;
+  (r.lines||[]).forEach(l => {
+    const tr = createRow(lineCount++);
+    document.getElementById("lines").appendChild(tr);
+    tr.querySelector(".descInput").value = l.desc;
+    tr.querySelector(".qtyInput").value = l.qty;
+    tr.querySelector(".priceInput").value = fmt(l.price);
+    tr.querySelector(".amountInput").value = fmt(l.amount);
+  });
+  while (lineCount < 15) { document.getElementById("lines").appendChild(createRow(lineCount++)); }
+  updateTotal();
+  saveState();
+  switchTab("facture");
+}
+
+document.getElementById("searchReleve").addEventListener("input", renderReleve);
+document.getElementById("dateFrom").addEventListener("change", renderReleve);
+document.getElementById("dateTo").addEventListener("change", renderReleve);
+document.getElementById("exportCsvBtn").addEventListener("click", () => {
+  const rows = [["Date","N° Facture","Nom","Prenom","Contact","Total","Statut"]];
+  releveCache.forEach(r => rows.push([r.invoice_date||"", r.invoice_no||"", r.patient_nom||"", r.patient_prenom||"", r.patient_contact||"", r.total||0, r._pending?"En attente":"Synchronisee"]));
+  const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n");
+  const blob = new Blob(["\ufeff"+csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "releve_factures_cfl.csv"; a.click();
+  URL.revokeObjectURL(url);
+});
+
+// -------- Tabs --------
+function switchTab(name) {
+  const isFacture = name === "facture";
+  document.getElementById("invoice").style.display = isFacture ? "block" : "none";
+  document.getElementById("releveView").style.display = isFacture ? "none" : "block";
+  document.getElementById("tabFacture").classList.toggle("active", isFacture);
+  document.getElementById("tabReleve").classList.toggle("active", !isFacture);
+  if (!isFacture) refreshReleve();
+}
+document.getElementById("tabFacture").addEventListener("click", () => switchTab("facture"));
+document.getElementById("tabReleve").addEventListener("click", () => switchTab("releve"));
+
+// -------- Network status --------
+function updateNetStatus() {
+  const online = navigator.onLine && !!sb;
+  document.getElementById("netDot").classList.toggle("off", !online);
+  document.getElementById("netLabel").textContent = !navigator.onLine ? "Hors ligne" : (sb ? "En ligne" : "Non connecté (Réglages)");
+  const pending = getPending().length;
+  const badge = document.getElementById("pendingBadge");
+  if (pending > 0) { badge.style.display = "inline-block"; badge.textContent = pending + " en attente"; }
+  else { badge.style.display = "none"; }
+}
+window.addEventListener("online", () => { updateNetStatus(); flushPending(); });
+window.addEventListener("offline", updateNetStatus);
+setInterval(() => { flushPending(); updateNetStatus(); }, 30000);
+
+// -------- Service worker (PWA) --------
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
+// -------- Init --------
+loadState();
+updateNetStatus();
+if (!cfg) setTimeout(openSettings, 400);
+</script>
+</body>
+</html>
