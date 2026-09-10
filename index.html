@@ -1672,7 +1672,8 @@ function renderReleve() {
     total += Number(r.total||0);
     const tr = document.createElement("tr");
     const isDemo = !!r._demo;
-    const canManage = !isDemo && !r.paid;
+    const canValidate = !isDemo && !r.paid;
+    const canDelete = !isDemo;
     const statusLabel = isDemo ? "Démo" : (r.paid ? "Payée" : "Enregistrée");
     const statusClass = isDemo ? "demo" : (r.paid ? "paid" : "synced");
     let actionsHtml;
@@ -1680,10 +1681,8 @@ function renderReleve() {
       actionsHtml = '';
     } else {
       actionsHtml = '<button class="secondary reopenBtn">Ouvrir</button>';
-      if (canManage) {
-        actionsHtml += '<button class="secondary validateBtn">Valider payée</button>';
-        actionsHtml += '<button class="danger deleteBtn">Supprimer</button>';
-      }
+      if (canValidate) actionsHtml += '<button class="secondary validateBtn">Valider payée</button>';
+      if (canDelete) actionsHtml += '<button class="danger deleteBtn">Supprimer</button>';
     }
     tr.innerHTML = `
       <td>${r.invoice_date||""}</td>
