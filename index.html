@@ -40,8 +40,9 @@
   --shadow-sm:0 2px 8px rgba(22,50,79,.06);
   --shadow-md:0 10px 30px rgba(22,50,79,.10);
   --shadow-lg:0 20px 55px rgba(22,50,79,.18);
-  --radius:16px;
-  --radius-sm:10px;
+  --radius:10px;
+  --radius-sm:6px;
+  --gutter:24px;
   color-scheme: light;
 }
 * { box-sizing:border-box; }
@@ -161,14 +162,6 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--brand
 }
 .patient { display:grid; grid-template-columns:120px 1fr 210px 1fr; gap:9px 12px; padding:14px 28px 20px; align-items:center; }
 .patient label { font-weight:700; font-size:13.5px; color:var(--gray); }
-.sexe-toggle { display:flex; gap:8px; }
-.sexe-btn {
-  flex:1; min-height:44px; padding:10px 8px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
-  background:var(--cream); color:var(--gray); font-weight:700; font-size:14px; font-family:inherit; cursor:pointer;
-  transition:background .15s, border-color .15s, color .15s;
-}
-.sexe-btn.active { background:var(--brand); color:#fff; border-color:var(--brand); }
-.sexe-btn:active { transform:scale(.97); }
 .table-wrap { padding:6px 28px 18px; overflow:visible; }
 table { width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; }
 th {
@@ -224,21 +217,21 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .suggestion .price-tag { flex:0 0 auto; color:var(--brand-dark); font-weight:800; font-size:13.5px; }
 .no-result { padding:16px; color:var(--muted); text-align:center; font-size:14px; }
 .totals-card {
-  margin:4px 28px 20px; border:1px solid var(--brand-light); border-radius:var(--radius-sm); overflow:hidden;
-  background:var(--brand-lighter);
+  margin:16px 28px 20px auto; max-width:340px; border:1px solid var(--border);
+  border-radius:var(--radius-sm); overflow:hidden; background:#fff;
 }
 .totals-line {
   display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 16px;
-  padding:11px 20px; border-bottom:1px solid var(--brand-light); font-size:13.5px; font-weight:700; color:var(--brand-dark);
+  padding:9px 16px; border-bottom:1px solid var(--border); font-size:13.5px; font-weight:600; color:var(--ink);
 }
 .totals-line:last-child { border-bottom:0; }
-.totals-line select,.totals-line input { width:auto; max-width:180px; min-height:36px; padding:6px 10px; font-size:13.5px; }
-.totals-line .tax-rate-input { width:56px; max-width:56px; min-height:30px; padding:4px 4px; text-align:center; display:inline-block; margin:0 4px; }
-.totals-line.grand-line { background:#fff; padding:15px 20px; border-top:3px solid var(--brand); }
+.totals-line select,.totals-line input { width:auto; max-width:170px; min-height:32px; padding:5px 8px; font-size:13.5px; border-radius:4px; }
+.totals-line .tax-rate-input { width:48px; max-width:48px; min-height:28px; padding:4px; text-align:center; display:inline-block; margin:0 4px; }
+.totals-line.grand-line { background:var(--brand-lighter); padding:12px 16px; border-top:2px solid var(--brand); border-bottom:1px solid var(--border); }
 .totals-line.balance-line #balanceDue { font-weight:800; }
 .totals-line.balance-line.due #balanceDue { color:#c0392b; }
-.total-label { color:var(--brand-dark); font-weight:800; font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
-.total-value { color:var(--brand-dark); font-weight:800; font-size:24px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.total-label { color:var(--brand-dark); font-weight:800; font-size:12.5px; letter-spacing:.4px; text-transform:uppercase; }
+.total-value { color:var(--brand-dark); font-weight:800; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .words { padding:0 28px 26px; }
 .words label { color:var(--brand-dark); font-weight:700; display:block; margin-bottom:6px; font-size:13.5px; }
 .words .stop { font-style:italic; margin-bottom:8px; color:var(--muted); font-size:13.5px; }
@@ -426,8 +419,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   table { min-width:600px; }
   @media (min-width:600px) { table { min-width:0; } }
   .section-title { margin:14px 16px 0; }
-  .totals-card { margin:4px 16px 18px; }
-  .totals-line { padding:10px 16px; }
+  .totals-card { margin:12px 16px 18px auto; max-width:none; }
+  .totals-line { padding:9px 14px; }
   .emit-wrap { padding:6px 16px 24px; }
   .words { padding:0 16px 22px; }
   .signatures { gap:24px; padding:10px 16px 24px; }
@@ -488,12 +481,6 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   select { -webkit-appearance:none; appearance:none; background-image:none!important; }
   .auto-field { color:var(--brand-dark)!important; }
   .patient { padding:10px 0 12px; grid-template-columns:110px 1fr 190px 1fr; }
-  .sexe-toggle { gap:0; justify-content:flex-start; }
-  .sexe-btn {
-    display:none!important; flex:0 0 auto; min-height:auto!important; border:0!important; background:none!important;
-    padding:3px 2px!important; font-weight:600!important; color:#111!important; font-size:14px!important;
-  }
-  .sexe-btn.active { display:inline-block!important; }
 
   /* -------- Tableau des prestations -------- */
   .table-wrap { padding:6px 0 8px; }
@@ -513,8 +500,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 
   /* -------- Total -------- */
   .totals-card {
-    margin:10px 0 12px auto; width:320px; background:var(--brand-lighter)!important;
-    border:1px solid var(--brand-light); border-radius:8px;
+    margin:10px 0 12px auto; width:300px; background:#fff!important;
+    border:1px solid var(--border); border-radius:4px;
   }
   .totals-line { padding:7px 14px; font-size:11.5px; }
   .totals-line select,.totals-line input { font-size:11.5px!important; min-height:auto!important; padding:2px 4px!important; }
@@ -596,12 +583,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <label class="right-label" for="prenom">Prénom :</label><input id="prenom" type="text">
       <label for="periode">Période du traitement :</label><input id="periode" type="text">
       <label class="right-label" for="contact">Contact :</label><input id="contact" type="tel" inputmode="tel">
-      <label>Sexe :</label>
-      <div class="sexe-toggle" id="sexeToggle">
-        <button type="button" class="sexe-btn" data-value="Masculin">Masculin</button>
-        <button type="button" class="sexe-btn" data-value="Féminin">Féminin</button>
-      </div>
-      <input type="hidden" id="sexe" value="">
+      <label for="sexe">Sexe :</label>
+      <select id="sexe"><option value=""></option><option>Masculin</option><option>Féminin</option></select>
       <label class="right-label" for="age">Âge :</label><input id="age" type="number" min="0" inputmode="numeric">
     </section>
 
@@ -1314,19 +1297,7 @@ document.getElementById("taxRate").addEventListener("input", () => { updateTotal
 document.getElementById("paymentMethod").addEventListener("change", () => { saveStateSoon(); });
 document.getElementById("amountPaid").addEventListener("input", () => { amountPaidTouched = true; updateBalance(); saveStateSoon(); });
 
-// -------- Sexe : boutons tactiles au lieu d'un <select> (plus fiable au doigt sur tablette) --------
-function syncSexeToggle() {
-  const val = document.getElementById("sexe").value;
-  document.querySelectorAll(".sexe-btn").forEach(b => b.classList.toggle("active", b.dataset.value === val));
-}
-function setSexe(val) {
-  document.getElementById("sexe").value = val;
-  syncSexeToggle();
-  saveStateSoon();
-}
-document.querySelectorAll(".sexe-btn").forEach(b => {
-  b.addEventListener("click", () => setSexe(b.dataset.value));
-});
+function syncSexeToggle() {} // Sexe est de nouveau un <select> natif ; rien à synchroniser.
 
 // -------- State (current draft invoice) --------
 function collectLines() {
