@@ -161,6 +161,14 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--brand
 }
 .patient { display:grid; grid-template-columns:120px 1fr 210px 1fr; gap:9px 12px; padding:14px 28px 20px; align-items:center; }
 .patient label { font-weight:700; font-size:13.5px; color:var(--gray); }
+.sexe-toggle { display:flex; gap:8px; }
+.sexe-btn {
+  flex:1; min-height:44px; padding:10px 8px; border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--cream); color:var(--gray); font-weight:700; font-size:14px; font-family:inherit; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s;
+}
+.sexe-btn.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+.sexe-btn:active { transform:scale(.97); }
 .table-wrap { padding:6px 28px 18px; overflow:visible; }
 table { width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; }
 th {
@@ -173,6 +181,13 @@ th:last-child { border-top-right-radius:10px; }
 td { border-bottom:1px solid var(--border); padding:0; vertical-align:middle; position:relative; transition:background .3s; }
 tr.row-flash { animation:flashRow 1s ease; }
 td.desc { width:34%; background:var(--cream); overflow:visible; }
+textarea.descInput {
+  resize:none; overflow:hidden; min-height:44px; line-height:1.4;
+  white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word;
+}
+.qtyInput::-webkit-outer-spin-button, .qtyInput::-webkit-inner-spin-button,
+.tax-rate-input::-webkit-outer-spin-button, .tax-rate-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.qtyInput[type=number], .tax-rate-input[type=number] { -moz-appearance:textfield; appearance:textfield; }
 td.qty { width:13%; background:var(--cream); }
 td.price { width:19%; background:#f6f9f7; }
 td.amount { width:24%; background:#f6f9f7; }
@@ -208,10 +223,20 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .suggestion .name { font-size:14.5px; }
 .suggestion .price-tag { flex:0 0 auto; color:var(--brand-dark); font-weight:800; font-size:13.5px; }
 .no-result { padding:16px; color:var(--muted); text-align:center; font-size:14px; }
-.total-row {
-  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 16px; margin:4px 28px 20px;
-  padding:16px 20px; background:var(--brand-lighter); border:1px solid var(--brand-light); border-top:3px solid var(--brand);
+.totals-card {
+  margin:4px 28px 20px; border:1px solid var(--brand-light); border-radius:var(--radius-sm); overflow:hidden;
+  background:var(--brand-lighter);
 }
+.totals-line {
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 16px;
+  padding:11px 20px; border-bottom:1px solid var(--brand-light); font-size:13.5px; font-weight:700; color:var(--brand-dark);
+}
+.totals-line:last-child { border-bottom:0; }
+.totals-line select,.totals-line input { width:auto; max-width:180px; min-height:36px; padding:6px 10px; font-size:13.5px; }
+.totals-line .tax-rate-input { width:56px; max-width:56px; min-height:30px; padding:4px 4px; text-align:center; display:inline-block; margin:0 4px; }
+.totals-line.grand-line { background:#fff; padding:15px 20px; border-top:3px solid var(--brand); }
+.totals-line.balance-line #balanceDue { font-weight:800; }
+.totals-line.balance-line.due #balanceDue { color:#c0392b; }
 .total-label { color:var(--brand-dark); font-weight:800; font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
 .total-value { color:var(--brand-dark); font-weight:800; font-size:24px; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .words { padding:0 28px 26px; }
@@ -401,7 +426,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   table { min-width:600px; }
   @media (min-width:600px) { table { min-width:0; } }
   .section-title { margin:14px 16px 0; }
-  .total-row { margin:4px 16px 18px; padding:14px 16px; }
+  .totals-card { margin:4px 16px 18px; }
+  .totals-line { padding:10px 16px; }
   .emit-wrap { padding:6px 16px 24px; }
   .words { padding:0 16px 22px; }
   .signatures { gap:24px; padding:10px 16px 24px; }
@@ -462,6 +488,12 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   select { -webkit-appearance:none; appearance:none; background-image:none!important; }
   .auto-field { color:var(--brand-dark)!important; }
   .patient { padding:10px 0 12px; grid-template-columns:110px 1fr 190px 1fr; }
+  .sexe-toggle { gap:0; justify-content:flex-start; }
+  .sexe-btn {
+    display:none!important; flex:0 0 auto; min-height:auto!important; border:0!important; background:none!important;
+    padding:3px 2px!important; font-weight:600!important; color:#111!important; font-size:14px!important;
+  }
+  .sexe-btn.active { display:inline-block!important; }
 
   /* -------- Tableau des prestations -------- */
   .table-wrap { padding:6px 0 8px; }
@@ -480,11 +512,16 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .suggestions { display:none!important; }
 
   /* -------- Total -------- */
-  .total-row {
-    margin:10px 0 12px auto; width:300px; padding:12px 18px; background:var(--brand-lighter)!important;
-    border:1px solid var(--brand-light); border-top:3px solid var(--brand); border-radius:8px 8px 0 0;
+  .totals-card {
+    margin:10px 0 12px auto; width:320px; background:var(--brand-lighter)!important;
+    border:1px solid var(--brand-light); border-radius:8px;
   }
+  .totals-line { padding:7px 14px; font-size:11.5px; }
+  .totals-line select,.totals-line input { font-size:11.5px!important; min-height:auto!important; padding:2px 4px!important; }
+  .totals-line .tax-rate-input { width:34px!important; max-width:34px!important; }
+  .totals-line.grand-line { border-top:2px solid var(--brand); padding:10px 14px; }
   .total-label { white-space:nowrap; letter-spacing:.3px; }
+  .total-value { font-size:18px!important; }
 
   .words { padding:2px 0 10px; }
   .words textarea { border-bottom:0; font-style:italic; }
@@ -559,8 +596,12 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <label class="right-label" for="prenom">Prénom :</label><input id="prenom" type="text">
       <label for="periode">Période du traitement :</label><input id="periode" type="text">
       <label class="right-label" for="contact">Contact :</label><input id="contact" type="tel" inputmode="tel">
-      <label for="sexe">Sexe :</label>
-      <select id="sexe"><option value=""></option><option>Masculin</option><option>Féminin</option></select>
+      <label>Sexe :</label>
+      <div class="sexe-toggle" id="sexeToggle">
+        <button type="button" class="sexe-btn" data-value="Masculin">Masculin</button>
+        <button type="button" class="sexe-btn" data-value="Féminin">Féminin</button>
+      </div>
+      <input type="hidden" id="sexe" value="">
       <label class="right-label" for="age">Âge :</label><input id="age" type="number" min="0" inputmode="numeric">
     </section>
 
@@ -571,8 +612,33 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       </table>
     </section>
 
-    <div class="total-row">
-      <div class="total-label">Montant total</div><div class="total-value" id="grandTotal">0 FCFA</div>
+    <div class="totals-card">
+      <div class="totals-line"><span>Sous-total</span><span id="subTotalVal">0 FCFA</span></div>
+      <div class="totals-line tax-line">
+        <span>Taxe (<input id="taxRate" type="number" class="tax-rate-input" min="0" max="100" step="0.1" value="0" inputmode="decimal">%)</span>
+        <span id="taxAmountVal">0 FCFA</span>
+      </div>
+      <div class="totals-line grand-line">
+        <span class="total-label">Montant total</span><span class="total-value" id="grandTotal">0 FCFA</span>
+      </div>
+      <div class="totals-line">
+        <span>Mode de paiement</span>
+        <select id="paymentMethod">
+          <option value="">—</option>
+          <option>Espèces</option>
+          <option>Carte bancaire</option>
+          <option>Mobile Money</option>
+          <option>Virement</option>
+          <option>Assurance</option>
+        </select>
+      </div>
+      <div class="totals-line">
+        <span>Montant payé</span>
+        <input id="amountPaid" type="text" class="money amount-paid-input" inputmode="numeric" placeholder="0">
+      </div>
+      <div class="totals-line balance-line" id="balanceLine">
+        <span>Reste à payer</span><span id="balanceDue">0 FCFA</span>
+      </div>
     </div>
 
     <section class="words">
@@ -678,32 +744,10 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
     </div>
 
     <div id="adminPanel" style="display:none;">
-      <div class="settings-block">
-        <p class="hint">Ces informations viennent de ton projet Supabase (Paramètres du projet → API). La clé « anon public » n'est pas secrète.</p>
-        <div class="modal-field">
-          <label for="cfgUrl">URL du projet Supabase</label>
-          <input id="cfgUrl" type="text" placeholder="https://xxxxx.supabase.co">
-        </div>
-        <div class="modal-field">
-          <label for="cfgKey">Clé « anon public »</label>
-          <input id="cfgKey" type="text" placeholder="eyJhbGciOi...">
-        </div>
-        <div class="modal-actions">
-          <button id="saveSettingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>Enregistrer et se connecter</span></button>
-        </div>
-        <p id="settingsMsg" class="hint"></p>
-      </div>
-
-      <div class="section-title">SYNCHRONISATION</div>
+      <div class="section-title" style="margin-top:0;">SYNCHRONISATION</div>
       <div class="settings-block">
         <div class="status-chip" id="statusChip"><span class="dot" id="netDot"></span><span id="netLabel">En ligne</span></div>
         <span id="pendingBadge" class="pending-badge" style="display:none;margin-left:10px;"></span>
-      </div>
-
-      <div class="section-title">POSTES ENREGISTRÉS</div>
-      <div class="settings-block">
-        <p class="hint">Chaque appareil qui utilise l'application apparaît ici, avec la dernière fois qu'il a été vu.</p>
-        <div id="devicesList" class="devices-list"></div>
       </div>
 
       <div class="section-title">CATALOGUE DES PRESTATIONS</div>
@@ -726,7 +770,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <div class="settings-block">
         <p class="hint">Génère un historique fictif (53 patients, dates et prestations variées) pour prévisualiser le Relevé et les Statistiques. Ces données restent uniquement sur cet appareil et ne sont jamais envoyées à la base partagée — elles n'affectent donc pas les vraies factures des autres postes.</p>
         <div class="modal-actions">
-          <button class="secondary" id="genDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Générer 53 factures payées de démonstration</span></button>
+          <button class="secondary" id="genDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Générer 100 factures payées de démonstration</span></button>
           <button class="danger" id="clearDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span>Effacer les données de démonstration</span></button>
         </div>
         <p id="demoMsg" class="hint"></p>
@@ -876,18 +920,6 @@ async function registerDevice() {
       last_seen: new Date().toISOString()
     }, { onConflict: "id" });
   } catch (e) {}
-}
-async function renderDevicesList() {
-  const list = document.getElementById("devicesList");
-  if (!sb || !navigator.onLine) { list.innerHTML = '<p class="hint">Connecte-toi à la base partagée pour voir les postes enregistrés.</p>'; return; }
-  const { data, error } = await sb.from("devices").select("*").order("last_seen", { ascending: false });
-  if (error || !data || !data.length) { list.innerHTML = '<p class="hint">Aucun poste enregistré pour l\'instant.</p>'; return; }
-  list.innerHTML = data.map(d => `
-    <div class="device-row">
-      <span class="device-name">${d.label || "Poste sans nom"}${d.id === getDeviceId() ? " (cet appareil)" : ""}</span>
-      <span class="device-seen">Vu le ${new Date(d.last_seen).toLocaleString("fr-FR")}</span>
-    </div>
-  `).join("");
 }
 function checkDeviceBanner() {
   const banner = document.getElementById("deviceBanner");
@@ -1053,7 +1085,7 @@ function createRow(i, opts) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td class="desc">
-      <input type="text" class="descInput" placeholder="Tapez une description...">
+      <textarea class="descInput" rows="1" placeholder="Tapez une description..."></textarea>
       <div class="suggestions"></div>
     </td>
     <td class="qty">
@@ -1080,22 +1112,33 @@ function createRow(i, opts) {
   return tr;
 }
 
+function autoGrowDesc(el) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
 function bindRow(tr) {
   const input = tr.querySelector(".descInput");
   const qty = tr.querySelector(".qtyInput");
   input.addEventListener("focus", () => showSuggestions(tr));
   input.addEventListener("input", () => {
     tr.dataset.itemId = "";
+    autoGrowDesc(input);
     showSuggestions(tr);
     saveStateSoon();
   });
   input.addEventListener("keydown", e => {
     const box = tr.querySelector(".suggestions");
     const items = Array.from(box.querySelectorAll(".suggestion"));
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (items.length && items[activeIndex]) items[activeIndex].dispatchEvent(new Event("click"));
+      return;
+    }
     if (!items.length) return;
     if (e.key === "ArrowDown") { e.preventDefault(); activeIndex = Math.min(activeIndex+1, items.length-1); paintActive(items); }
     else if (e.key === "ArrowUp") { e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); paintActive(items); }
-    else if (e.key === "Enter") { e.preventDefault(); if (items[activeIndex]) items[activeIndex].dispatchEvent(new Event("click")); }
   });
   qty.addEventListener("input", () => { updateRow(tr); saveStateSoon(); });
   tr.querySelector(".qty-minus").addEventListener("click", () => {
@@ -1148,6 +1191,7 @@ function showSuggestions(tr) {
 function chooseItem(tr, item) {
   tr.dataset.itemId = item.id;
   tr.querySelector(".descInput").value = item.name;
+  autoGrowDesc(tr.querySelector(".descInput"));
   tr.querySelector(".priceInput").value = fmt(item.price);
   tr.querySelector(".suggestions").style.display = "none";
   tr.classList.add("row-flash");
@@ -1222,22 +1266,66 @@ function amountToWordsFR(amount) {
   return capitalized + (n > 1 ? " francs CFA" : " franc CFA");
 }
 
-function updateTotal() {
-  let total = 0;
+let amountPaidTouched = false;
+function computeTotals() {
+  let subtotal = 0;
   document.querySelectorAll("#lines tr").forEach(tr => {
     const amountText = tr.querySelector(".amountInput").value.replace(/[^\d]/g,"");
-    total += Number(amountText || 0);
+    subtotal += Number(amountText || 0);
   });
+  const taxRateEl = document.getElementById("taxRate");
+  const taxRate = Math.max(0, Number(taxRateEl ? taxRateEl.value : 0) || 0);
+  const taxAmount = Math.round(subtotal * taxRate / 100);
+  const total = subtotal + taxAmount;
+  return { subtotal, taxRate, taxAmount, total };
+}
+function updateTotal() {
+  const { subtotal, taxAmount, total } = computeTotals();
+  document.getElementById("subTotalVal").textContent = fmt(subtotal);
+  document.getElementById("taxAmountVal").textContent = fmt(taxAmount);
   document.getElementById("grandTotal").textContent = fmt(total);
   const wordsEl = document.getElementById("words");
   if (wordsEl) wordsEl.value = amountToWordsFR(total);
+  const amountPaidEl = document.getElementById("amountPaid");
+  if (amountPaidEl && !amountPaidTouched) amountPaidEl.value = total ? fmt(total) : "";
+  updateBalance();
   return total;
+}
+
+function updateBalance() {
+  const total = Number(document.getElementById("grandTotal").textContent.replace(/[^\d]/g,"") || 0);
+  const paidText = (document.getElementById("amountPaid").value || "").replace(/[^\d]/g,"");
+  const paid = Number(paidText || 0);
+  const balance = total - paid;
+  const balanceLine = document.getElementById("balanceLine");
+  document.getElementById("balanceDue").textContent = fmt(Math.max(balance, 0));
+  balanceLine.classList.toggle("due", balance > 0);
+  balanceLine.querySelector("span:first-child").textContent = balance < 0 ? "Trop perçu" : "Reste à payer";
+  if (balance < 0) document.getElementById("balanceDue").textContent = fmt(Math.abs(balance));
 }
 
 document.addEventListener("pointerdown", e => {
   document.querySelectorAll(".suggestions").forEach(box => {
     if (!box.parentElement.contains(e.target)) box.style.display = "none";
   });
+});
+
+document.getElementById("taxRate").addEventListener("input", () => { updateTotal(); saveStateSoon(); });
+document.getElementById("paymentMethod").addEventListener("change", () => { saveStateSoon(); });
+document.getElementById("amountPaid").addEventListener("input", () => { amountPaidTouched = true; updateBalance(); saveStateSoon(); });
+
+// -------- Sexe : boutons tactiles au lieu d'un <select> (plus fiable au doigt sur tablette) --------
+function syncSexeToggle() {
+  const val = document.getElementById("sexe").value;
+  document.querySelectorAll(".sexe-btn").forEach(b => b.classList.toggle("active", b.dataset.value === val));
+}
+function setSexe(val) {
+  document.getElementById("sexe").value = val;
+  syncSexeToggle();
+  saveStateSoon();
+}
+document.querySelectorAll(".sexe-btn").forEach(b => {
+  b.addEventListener("click", () => setSexe(b.dataset.value));
 });
 
 // -------- State (current draft invoice) --------
@@ -1265,6 +1353,9 @@ function state() {
     contact: document.getElementById("contact").value,
     periode: document.getElementById("periode").value,
     words: document.getElementById("words").value,
+    taxRate: document.getElementById("taxRate").value,
+    paymentMethod: document.getElementById("paymentMethod").value,
+    amountPaid: document.getElementById("amountPaid").value,
     lines: collectLines(),
     total: updateTotal()
   };
@@ -1284,15 +1375,32 @@ function loadState() {
   try { s = JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); } catch(e) {}
   document.getElementById("lines").innerHTML = "";
   lineCount = 0;
+  currentInvoiceId = null;
+  ["date","invoiceNo","nom","prenom","sexe","age","contact","periode","words"].forEach(id => {
+    if (document.getElementById(id)) document.getElementById(id).value = "";
+  });
+  document.getElementById("taxRate").value = "0";
+  document.getElementById("paymentMethod").value = "";
+  document.getElementById("amountPaid").value = "";
+  amountPaidTouched = false;
+  syncSexeToggle();
   if (s) {
     currentInvoiceId = s.id || null;
     ["date","invoiceNo","nom","prenom","sexe","age","contact","periode","words"].forEach(id => {
       if (document.getElementById(id)) document.getElementById(id).value = s[id] || "";
     });
+    syncSexeToggle();
+    document.getElementById("taxRate").value = s.taxRate || "0";
+    document.getElementById("paymentMethod").value = s.paymentMethod || "";
+    if (s.amountPaid) {
+      document.getElementById("amountPaid").value = s.amountPaid;
+      amountPaidTouched = true;
+    }
     (s.lines||[]).forEach(l => {
       const tr = createRow(lineCount++);
       document.getElementById("lines").appendChild(tr);
       tr.querySelector(".descInput").value = l.desc;
+      autoGrowDesc(tr.querySelector(".descInput"));
       tr.querySelector(".qtyInput").value = l.qty;
       tr.querySelector(".priceInput").value = fmt(l.price);
       tr.querySelector(".amountInput").value = fmt(l.amount);
@@ -1334,7 +1442,12 @@ window.addEventListener("beforeprint", markEmptyRowsForPrint);
 window.addEventListener("afterprint", () => {
   document.querySelectorAll("#lines tr.print-hide-empty").forEach(tr => tr.classList.remove("print-hide-empty"));
 });
+function autoGrowAllDesc() {
+  document.querySelectorAll(".descInput").forEach(autoGrowDesc);
+}
 document.getElementById("printBtn").addEventListener("click", () => window.print());
+window.addEventListener("beforeprint", autoGrowAllDesc);
+window.addEventListener("resize", () => { clearTimeout(window._resizeGrowT); window._resizeGrowT = setTimeout(autoGrowAllDesc, 150); });
 document.getElementById("newBtn").addEventListener("click", async () => {
   const ok = await confirmDialog("La facture en cours affichée sera remplacée par une facture vierge (elle reste dans le relevé si déjà enregistrée).", "Nouvelle facture ?");
   if (!ok) return;
@@ -1346,13 +1459,11 @@ document.getElementById("newBtn").addEventListener("click", async () => {
 });
 let adminUnlocked = false;
 function openSettings() {
-  document.getElementById("cfgUrl").value = cfg ? cfg.url : "";
-  document.getElementById("cfgKey").value = cfg ? cfg.key : "";
   document.getElementById("adminPinInput").value = "";
   document.getElementById("adminLockMsg").textContent = "";
   document.getElementById("adminLock").style.display = adminUnlocked ? "none" : "block";
   document.getElementById("adminPanel").style.display = adminUnlocked ? "block" : "none";
-  if (adminUnlocked) { renderDevicesList(); renderCatalogAdmin(); }
+  if (adminUnlocked) { renderCatalogAdmin(); }
   switchTab("reglages");
 }
 document.getElementById("settingsBtn").addEventListener("click", openSettings);
@@ -1363,7 +1474,6 @@ function tryUnlockAdmin() {
     adminUnlocked = true;
     document.getElementById("adminLock").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
-    renderDevicesList();
     renderCatalogAdmin();
   } else {
     document.getElementById("adminLockMsg").textContent = "Code incorrect.";
@@ -1371,19 +1481,6 @@ function tryUnlockAdmin() {
 }
 document.getElementById("adminUnlockBtn").addEventListener("click", tryUnlockAdmin);
 document.getElementById("adminPinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlockAdmin(); });
-document.getElementById("saveSettingsBtn").addEventListener("click", () => {
-  const url = document.getElementById("cfgUrl").value.trim();
-  const key = document.getElementById("cfgKey").value.trim();
-  if (!url || !key) { document.getElementById("settingsMsg").textContent = "Merci de renseigner les deux champs."; return; }
-  cfg = { url, key };
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
-  document.getElementById("settingsMsg").textContent = "Connexion en cours...";
-  initSupabase();
-  setTimeout(() => {
-    updateNetStatus();
-    showToast("Connecté à la base partagée.", "success");
-  }, 600);
-});
 
 // -------- Données de démonstration --------
 const DEMO_KEY = "cfl_demo_invoices_v1";
@@ -1435,10 +1532,11 @@ function generateDemoInvoices(count) {
 }
 
 document.getElementById("genDemoBtn").addEventListener("click", () => {
-  const list = generateDemoInvoices(53);
+  localStorage.removeItem(DEMO_KEY);
+  const list = generateDemoInvoices(100);
   localStorage.setItem(DEMO_KEY, JSON.stringify(list));
-  document.getElementById("demoMsg").textContent = "53 factures payées de démonstration générées.";
-  showToast("53 factures payées de démonstration ajoutées au Relevé et aux Statistiques.", "success");
+  document.getElementById("demoMsg").textContent = "100 factures payées de démonstration générées.";
+  showToast("100 factures payées de démonstration ajoutées au Relevé et aux Statistiques.", "success");
   refreshReleve();
 });
 document.getElementById("clearDemoBtn").addEventListener("click", () => {
@@ -1458,6 +1556,8 @@ document.getElementById("emettreBtn").addEventListener("click", async () => {
   if (!s.lines.length) { showToast("Ajoutez au moins une prestation avant d'émettre la facture.", "error"); return; }
   if (!s.id) s.id = uuid();
   currentInvoiceId = s.id;
+  const totals = computeTotals();
+  const amountPaidNum = Number((s.amountPaid || "").replace(/[^\d]/g,"") || 0);
   const record = {
     id: s.id,
     invoice_no: s.invoiceNo || null,
@@ -1470,6 +1570,12 @@ document.getElementById("emettreBtn").addEventListener("click", async () => {
     periode: s.periode || null,
     lines: s.lines,
     total: s.total,
+    subtotal: totals.subtotal,
+    tax_rate: totals.taxRate,
+    tax_amount: totals.taxAmount,
+    payment_method: s.paymentMethod || null,
+    amount_paid: amountPaidNum,
+    balance_due: Math.max(totals.total - amountPaidNum, 0),
     montant_lettres: s.words || null,
     paid: currentInvoicePaid
   };
@@ -1481,6 +1587,7 @@ document.getElementById("emettreBtn").addEventListener("click", async () => {
   );
   currentInvoiceId = null;
   currentInvoicePaid = false;
+  amountPaidTouched = false;
   localStorage.removeItem(STORAGE_KEY);
   loadState();
 });
@@ -1651,16 +1758,27 @@ function reopenInvoice(r) {
   document.getElementById("nom").value = r.patient_nom || "";
   document.getElementById("prenom").value = r.patient_prenom || "";
   document.getElementById("sexe").value = r.patient_sexe || "";
+  syncSexeToggle();
   document.getElementById("age").value = r.patient_age || "";
   document.getElementById("contact").value = r.patient_contact || "";
   document.getElementById("periode").value = r.periode || "";
   document.getElementById("words").value = r.montant_lettres || "";
+  document.getElementById("taxRate").value = r.tax_rate || "0";
+  document.getElementById("paymentMethod").value = r.payment_method || "";
+  amountPaidTouched = false;
+  if (r.amount_paid) {
+    document.getElementById("amountPaid").value = fmt(r.amount_paid);
+    amountPaidTouched = true;
+  } else {
+    document.getElementById("amountPaid").value = "";
+  }
   document.getElementById("lines").innerHTML = "";
   lineCount = 0;
   (r.lines||[]).forEach(l => {
     const tr = createRow(lineCount++);
     document.getElementById("lines").appendChild(tr);
     tr.querySelector(".descInput").value = l.desc;
+    autoGrowDesc(tr.querySelector(".descInput"));
     tr.querySelector(".qtyInput").value = l.qty;
     tr.querySelector(".priceInput").value = fmt(l.price);
     tr.querySelector(".amountInput").value = fmt(l.amount);
