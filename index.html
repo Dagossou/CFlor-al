@@ -598,10 +598,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
         <select id="paymentMethod">
           <option value="">—</option>
           <option>Espèces</option>
-          <option>Carte bancaire</option>
           <option>Mobile Money</option>
-          <option>Virement</option>
-          <option>Assurance</option>
         </select>
       </div>
       <div class="totals-line">
@@ -732,15 +729,6 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
         <div id="catalogList" class="catalog-list"></div>
       </div>
 
-      <div class="section-title">DONNÉES DE DÉMONSTRATION</div>
-      <div class="settings-block">
-        <p class="hint">Génère un historique fictif (53 patients, dates et prestations variées) pour prévisualiser le Relevé et les Statistiques. Ces données restent uniquement sur cet appareil et ne sont jamais envoyées à la base partagée — elles n'affectent donc pas les vraies factures des autres postes.</p>
-        <div class="modal-actions">
-          <button class="secondary" id="genDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Générer 100 factures payées de démonstration</span></button>
-          <button class="danger" id="clearDemoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span>Effacer les données de démonstration</span></button>
-        </div>
-        <p id="demoMsg" class="hint"></p>
-      </div>
     </div>
   </main>
 
@@ -754,7 +742,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
         <li>Touchez <b>Émettre / Enregistrer la facture</b> pour l'ajouter au relevé partagé — la page revient ensuite à une facture vierge.</li>
         <li>Utilisez <b>Imprimer / PDF</b> pour imprimer ou enregistrer en PDF.</li>
         <li>Si la connexion Internet est coupée, la facture reste enregistrée sur cet appareil (badge « en attente ») puis se synchronise automatiquement au retour du réseau.</li>
-        <li>Dans le Relevé, une facture reste modifiable, supprimable ou peut être validée comme payée pendant au moins une heure après son émission.</li>
+        <li>Dans le Relevé, une facture reste modifiable, supprimable ou peut être validée comme payée pendant 30 minutes après son émission.</li>
         <li>Sur une tablette ou un téléphone, utilisez le menu du navigateur → <b>Ajouter à l'écran d'accueil / Installer l'application</b> pour avoir une icône comme une vraie application.</li>
       </ol>
     </div>
@@ -1436,72 +1424,12 @@ function tryUnlockAdmin() {
 document.getElementById("adminUnlockBtn").addEventListener("click", tryUnlockAdmin);
 document.getElementById("adminPinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlockAdmin(); });
 
-// -------- Données de démonstration --------
-const DEMO_KEY = "cfl_demo_invoices_v1";
-const DEMO_FIRST_M = ["Kodjo","Yao","Kwame","Komla","Sena","Edem","Fiifi","Mensah","Kossi","Amewou"];
-const DEMO_FIRST_F = ["Akosua","Ama","Efua","Adjoa","Abra","Afi","Akpene","Aku","Mawuena","Delali"];
-const DEMO_LAST = ["Agbeko","Dogbe","Amouzou","Kponton","Adjovi","Baba","Tchamie","Sossou","Lawson","Koffi","Agbenyo","Nyavor"];
-const DEMO_PRESTATIONS = ["Consultation générale","Analyse sanguine","Paludisme : test rapide + Parasitémie","Pansement","Compresse gaze","Échographie abdominale","BAAR direct (Ziehl Neelson)","Consultation spécialisée","Radiographie thorax","Vaccination"];
-
-function generateDemoInvoices(count) {
-  const list = [];
-  const now = Date.now();
-  for (let i = 0; i < count; i++) {
-    const isMale = i % 2 === 0;
-    const prenom = isMale ? DEMO_FIRST_M[i % DEMO_FIRST_M.length] : DEMO_FIRST_F[i % DEMO_FIRST_F.length];
-    const nom = DEMO_LAST[(i * 3) % DEMO_LAST.length];
-    const sexe = isMale ? "Masculin" : "Féminin";
-    const daysAgo = Math.floor(Math.random() * 90);
-    const d = new Date(now - daysAgo * 86400000);
-    const dateISO = new Date(d - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
-    const nbLines = 1 + Math.floor(Math.random() * 3);
-    const lines = [];
-    for (let j = 0; j < nbLines; j++) {
-      const desc = DEMO_PRESTATIONS[Math.floor(Math.random() * DEMO_PRESTATIONS.length)];
-      const qty = 1 + Math.floor(Math.random() * 2);
-      const price = (2 + Math.floor(Math.random() * 40)) * 500;
-      lines.push({ desc, qty, price, amount: qty * price });
-    }
-    const total = lines.reduce((s, l) => s + l.amount, 0);
-    list.push({
-      id: "demo-" + i,
-      invoice_no: "CFL-" + dateISO.replace(/-/g,"") + "-D" + String(i+1).padStart(2,"0"),
-      invoice_date: dateISO,
-      patient_nom: nom,
-      patient_prenom: prenom,
-      patient_sexe: sexe,
-      patient_age: 5 + Math.floor(Math.random() * 70),
-      patient_contact: "9" + String(10000000 + i * 137).slice(0,8),
-      periode: "",
-      lines,
-      total,
-      montant_lettres: amountToWordsFR(total),
-      paid: true,
-      created_at: d.toISOString(),
-      updated_at: d.toISOString(),
-      _demo: true
-    });
-  }
-  return list;
-}
-
-document.getElementById("genDemoBtn").addEventListener("click", () => {
-  localStorage.removeItem(DEMO_KEY);
-  const list = generateDemoInvoices(100);
-  localStorage.setItem(DEMO_KEY, JSON.stringify(list));
-  document.getElementById("demoMsg").textContent = "100 factures payées de démonstration générées.";
-  showToast("100 factures payées de démonstration ajoutées au Relevé et aux Statistiques.", "success");
-  refreshReleve();
-});
-document.getElementById("clearDemoBtn").addEventListener("click", () => {
-  localStorage.removeItem(DEMO_KEY);
-  document.getElementById("demoMsg").textContent = "Données de démonstration effacées.";
-  showToast("Données de démonstration effacées.", "info");
-  refreshReleve();
-});
-function getDemoInvoices() {
-  try { return JSON.parse(localStorage.getItem(DEMO_KEY) || "[]"); } catch(e) { return []; }
-}
+// -------- Données de démonstration (fonctionnalité retirée) --------
+// Purge automatique, une seule fois, de toute ancienne donnée de démo qui traînerait
+// encore sur cet appareil depuis une version précédente de l'application.
+(function purgeOldDemoData() {
+  try { localStorage.removeItem("cfl_demo_invoices_v1"); } catch(e) {}
+})();
 
 // -------- Emettre / Enregistrer --------
 let currentInvoicePaid = false;
@@ -1636,8 +1564,7 @@ async function refreshReleve() {
   const pending = getPending();
   const remoteIds = new Set(remote.map(r => r.id));
   const merged = remote.map(r => ({...r, _pending:false}))
-    .concat(pending.filter(p => !remoteIds.has(p.id)).map(p => ({...p, _pending:true})))
-    .concat(getDemoInvoices());
+    .concat(pending.filter(p => !remoteIds.has(p.id)).map(p => ({...p, _pending:true})));
   merged.sort((a,b) => (b.invoice_date||"").localeCompare(a.invoice_date||""));
   releveCache = merged;
   renderReleve();
@@ -1668,8 +1595,8 @@ function renderReleve() {
     const tr = document.createElement("tr");
     const isDemo = !!r._demo;
     const createdMs = r.created_at ? new Date(r.created_at).getTime() : 0;
-    const withinHour = createdMs > 0 && (Date.now() - createdMs) < 3600000;
-    const canManage = !isDemo && !r.paid && (r._pending || withinHour);
+    const withinEditWindow = createdMs > 0 && (Date.now() - createdMs) < 1800000;
+    const canManage = !isDemo && !r.paid && (r._pending || withinEditWindow);
     const statusLabel = isDemo ? "Démo" : (r.paid ? "Payée" : "Enregistrée");
     const statusClass = isDemo ? "demo" : (r.paid ? "paid" : "synced");
     let actionsHtml;
