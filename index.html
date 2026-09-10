@@ -163,7 +163,7 @@ th {
 .table-wrap table th:nth-child(2) { text-align:center; }
 .table-wrap table th:nth-child(3),.table-wrap table th:nth-child(4) { text-align:right; }
 td { border-bottom:1px solid var(--border); padding:0; vertical-align:middle; position:relative; transition:background .3s; }
-td.desc { width:34%; background:var(--cream); overflow:visible; }
+td.desc { width:34%; overflow:visible; }
 textarea.descInput {
   resize:none; overflow:hidden; min-height:44px; line-height:1.4;
   white-space:pre-wrap; word-break:break-word; overflow-wrap:break-word;
@@ -171,25 +171,24 @@ textarea.descInput {
 .qtyInput::-webkit-outer-spin-button, .qtyInput::-webkit-inner-spin-button,
 .tax-rate-input::-webkit-outer-spin-button, .tax-rate-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
 .qtyInput[type=number], .tax-rate-input[type=number] { -moz-appearance:textfield; appearance:textfield; }
-td.qty { width:13%; background:var(--cream); }
-td.price { width:19%; background:var(--brand-lighter); }
-td.amount { width:24%; background:var(--brand-lighter); }
-td.actions-col { width:10%; background:var(--cream); text-align:center; }
+td.qty { width:13%; }
+td.price { width:19%; }
+td.amount { width:24%; }
+td.actions-col { width:10%; text-align:center; }
 .qty-stepper {
-  display:flex; align-items:stretch; justify-content:center; height:38px; max-width:118px; margin:0 auto;
-  border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; background:#fff;
+  display:flex; align-items:center; justify-content:center; gap:2px; height:38px; max-width:110px; margin:0 auto;
 }
 .qty-stepper .qtyInput {
-  text-align:center; padding:0 2px; min-width:0; flex:1 1 auto; min-height:auto; border-radius:0;
-  border:0; border-left:1px solid var(--border); border-right:1px solid var(--border); background:#fff;
+  text-align:center; padding:0 2px; min-width:0; width:34px; flex:0 0 34px; min-height:auto; border-radius:0;
+  border:0; border-bottom:1.5px solid var(--border); background:transparent;
 }
 .qty-btn {
-  flex:0 0 34px; width:34px; height:auto; min-height:auto; padding:0; font-size:16px; font-weight:800;
-  line-height:1; box-shadow:none; background:var(--brand-lighter); color:var(--brand-dark); border-radius:0; border:0;
+  flex:0 0 26px; width:26px; height:26px; min-height:auto; padding:0; font-size:16px; font-weight:800;
+  line-height:1; box-shadow:none; background:transparent; color:var(--brand-dark); border-radius:var(--radius-xs); border:0;
   justify-content:center;
 }
-.qty-btn svg { width:15px; height:15px; }
-.qty-btn:hover { background:var(--brand); color:#fff; }
+.qty-btn svg { width:14px; height:14px; }
+.qty-btn:hover { background:var(--brand-lighter); }
 td input { border:0; border-radius:0; background:transparent; min-height:48px; }
 td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff; }
 .row-delete {
@@ -230,15 +229,14 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .totals-line:last-child { border-bottom:0; }
 .totals-line select,.totals-line input { width:auto; max-width:170px; min-height:32px; padding:5px 8px; font-size:13.5px; border-radius:4px; }
 .totals-line .tax-rate-input { width:48px; max-width:48px; min-height:28px; padding:4px; text-align:center; display:inline-block; margin:0 4px; }
-.totals-line.grand-line { background:var(--brand-lighter); padding:12px 16px; border-top:2px solid var(--brand); border-bottom:1px solid var(--border); }
 .totals-line.balance-line #balanceDue { font-weight:800; }
 .totals-line.balance-line.due #balanceDue { color:var(--bad); }
-.total-label { color:var(--brand-dark); font-weight:800; font-size:12.5px; letter-spacing:.4px; text-transform:uppercase; }
-.total-value { color:var(--brand-dark); font-weight:800; font-size:20px; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.words { padding:0 var(--gutter) 18px; }
+.total-highlight { padding:16px var(--gutter) 4px; text-align:left; }
+.total-highlight-label { color:var(--brand-dark); font-weight:800; font-size:12.5px; letter-spacing:.4px; text-transform:uppercase; }
+.total-highlight-value { color:var(--brand-dark); font-weight:800; font-size:32px; font-variant-numeric:tabular-nums; line-height:1.25; margin:2px 0 10px; }
 .words-line { font-size:13px; line-height:1.5; }
 .words-label { font-style:italic; color:var(--muted); }
-.words-value { font-weight:700; color:var(--brand-dark); }
+.words-value { font-weight:700; color:var(--ink); }
 .signatures { display:grid; grid-template-columns:1fr 1fr; gap:80px; padding:10px var(--gutter) var(--gutter); text-align:center; font-weight:700; color:var(--gray); font-size:13.5px; }
 .signature-line { margin-top:54px; border-top:1px dashed #c6cdc9; padding-top:8px; }
 .emit-wrap { display:flex; justify-content:center; padding:6px var(--gutter) var(--gutter); }
@@ -309,33 +307,39 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
 .catalog-empty { padding:16px; text-align:center; color:var(--muted); font-size:13.5px; }
 .modal-field label { display:block; font-weight:700; color:var(--brand-dark); margin-bottom:5px; font-size:13.5px; }
 .modal-actions { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
-.releve-summary { display:flex; gap:14px; padding:20px var(--gutter) 0; flex-wrap:wrap; }
-.releve-summary .stat {
-  background:var(--brand-lighter); border:1px solid var(--brand-light); border-radius:var(--radius-sm); padding:14px 20px;
-  font-weight:800; color:var(--brand-dark); font-size:15px; min-width:150px;
+.releve-header {
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  padding:20px var(--gutter) 0;
 }
-.releve-summary .stat .stat-label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:3px; }
-.releve-summary .stat.stat-locked { display:flex; align-items:flex-end; gap:12px; }
-.releve-summary .stat.stat-locked #statTotal { letter-spacing:2px; }
-.stat-reveal-btn { min-height:32px; padding:6px 10px; font-size:12.5px; background:#fff; color:var(--brand-dark); border:1px solid var(--brand-light); box-shadow:none; }
+.releve-summary { display:flex; gap:22px; flex-wrap:wrap; }
+.releve-summary .stat { display:flex; flex-direction:column; gap:2px; min-width:90px; }
+.releve-summary .stat .stat-value { font-size:22px; font-weight:800; color:var(--brand-dark); font-variant-numeric:tabular-nums; }
+.releve-summary .stat .stat-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+.releve-summary .stat.stat-locked { flex-direction:row; align-items:center; flex-wrap:wrap; gap:2px 10px; }
+.releve-summary .stat.stat-locked .stat-value { letter-spacing:2px; }
+.releve-summary .stat.stat-locked .stat-label { width:100%; order:-1; }
+.stat-reveal-btn { min-height:30px; padding:5px 10px; font-size:12px; background:#fff; color:var(--brand-dark); border:1px solid var(--brand-light); box-shadow:none; }
 .stat-reveal-btn svg { width:14px; height:14px; }
 .stat-reveal-btn:hover { border-color:var(--brand); }
 .stat-reveal-btn[hidden] { display:none; }
-.releve-toolbar { display:flex; flex-wrap:wrap; gap:10px; padding:16px var(--gutter) 6px; align-items:center; }
+.releve-toolbar { display:flex; flex-wrap:wrap; gap:10px; padding:18px var(--gutter) 6px; align-items:center; }
 .search-wrap { flex:1; min-width:220px; position:relative; }
 .search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:17px; height:17px; color:var(--muted); }
 .search-wrap input { padding-left:38px; }
 .releve-toolbar input[type=date] { max-width:160px; }
 .releve-wrap { padding:10px var(--gutter) var(--gutter); overflow-x:auto; }
-.releve-table { width:100%; border-collapse:separate; border-spacing:0 8px; min-width:820px; }
+.releve-table { width:100%; border-collapse:collapse; min-width:820px; }
 .releve-table th {
-  background:transparent; color:var(--muted); padding:0 10px 6px; font-size:11.5px; text-align:left; border:0;
-  font-weight:800; letter-spacing:.4px; text-transform:uppercase;
+  background:transparent; color:var(--muted); padding:0 10px 8px; font-size:11.5px; text-align:left; border:0;
+  border-bottom:2px solid var(--ink); font-weight:800; letter-spacing:.4px; text-transform:uppercase;
 }
-.releve-table td { background:var(--cream); border:1px solid var(--border); border-left:0; border-right:0; padding:12px 10px; font-size:14px; }
-.releve-table tr td:first-child { border-left:1px solid var(--border); border-radius:var(--radius-sm) 0 0 var(--radius-sm); }
-.releve-table tr td:last-child { border-right:1px solid var(--border); border-radius:0 var(--radius-sm) var(--radius-sm) 0; }
+.releve-table th.num { text-align:right; }
+.releve-table th.actions-th { text-align:right; }
+.releve-table td { background:transparent; border-bottom:1px solid var(--border); padding:12px 10px; font-size:14px; }
+.releve-table td:nth-child(3) { font-weight:700; color:var(--ink); }
+.releve-table td:nth-child(5) { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
 .releve-table tr:hover td { background:var(--brand-lighter); }
+.releve-actions { justify-content:flex-end; }
 .releve-actions button { padding:7px 12px; min-height:34px; font-size:12.5px; }
 .tag { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; }
 .tag.synced { background:var(--ok-bg); color:var(--brand-dark); }
@@ -448,7 +452,8 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .totals-card { margin:12px 16px 18px auto; max-width:none; }
   .totals-line { padding:9px 14px; }
   .emit-wrap { padding:6px 16px 24px; }
-  .words { padding:0 16px 22px; }
+  .total-highlight { padding:14px 16px 2px; }
+  .total-highlight-value { font-size:26px; }
   .signatures { gap:24px; padding:10px 16px 24px; }
   .releve-toolbar, .releve-wrap, .releve-summary { padding-left:16px; padding-right:16px; }
   .kpi-grid { grid-template-columns:1fr 1fr; padding-left:16px; padding-right:16px; }
@@ -457,74 +462,86 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   .chart-card .chart-wrap { height:220px; }
 }
 @media print {
-  @page { size:A4 portrait; margin:8mm 12mm 10mm; }
+  @page { size:A4 portrait; margin:9mm 13mm; }
   html,body { background:white; }
   .shell { display:block; max-width:none; padding:0; margin:0; }
   .main { width:100%; }
   .app { max-width:none; padding:0; }
   .sidebar,.topbar-v2,.footer-note,.help,.modal,.suggestions,#releveView,#statsView,#settingsView,#helpView,.toast-stack,
   .emit-wrap,.actions-col,.row-delete,.device-banner,.qty-btn,.add-line-row { display:none!important; }
-  .sheet { box-shadow:none; border-radius:0; border:0; animation:none; }
-  *,*::before,*::after { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
+  .sheet { box-shadow:none; border-radius:0; border:0; animation:none; width:100%; max-width:100%; }
+  *,*::before,*::after { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; box-sizing:border-box; }
   input[type=date]::-webkit-calendar-picker-indicator { display:none; -webkit-appearance:none; }
+  /* Tout tient sur une seule colonne, bien à l'intérieur des marges de la page —
+     évite qu'un élément dépasse et soit coupé au bord de la feuille. */
+  .billing-workspace, .billing-workspace .editor-main, .billing-workspace .payment-panel {
+    display:block!important; position:static!important; width:100%!important; max-width:100%!important; margin:0!important;
+  }
 
   /* -------- En-tête plat (logo + coordonnées), sans bandeau ni dégradé -------- */
   .brand {
-    display:flex; align-items:flex-start; justify-content:space-between; gap:18px;
-    background:#fff; color:var(--ink); padding:0 0 10px; margin:0; border:0; border-radius:0;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    background:#fff; color:var(--ink); padding:0 0 6px; margin:0; border:0; border-radius:0;
   }
-  .brand img.logo { height:40px; width:auto; max-width:140px; object-fit:contain; }
-  .brand .brand-text { text-align:right; }
-  .brand .brand-text h1 { font-size:13.5px; color:var(--ink); letter-spacing:.3px; }
-  .brand .brand-text .agrement { color:var(--muted); font-size:9px; font-weight:700; margin-top:2px; }
-  .brand .brand-text .sub { color:var(--muted); font-size:10px; line-height:1.6; max-width:320px; margin-left:auto; }
-  .brand .brand-text .sub .nowrap { white-space:nowrap; }
-  .rule-bars { margin:0 0 10px; }
+  .brand img.logo { height:36px; width:auto; max-width:120px; object-fit:contain; flex:0 0 auto; }
+  .brand .brand-text { text-align:right; min-width:0; }
+  .brand .brand-text h1 { font-size:12.5px; color:var(--ink); letter-spacing:.3px; }
+  .brand .brand-text .agrement { color:var(--muted); font-size:8.5px; font-weight:700; margin-top:2px; }
+  .brand .brand-text .sub { color:var(--muted); font-size:9px; line-height:1.5; max-width:300px; margin-left:auto; }
+  .brand .brand-text .sub .nowrap { white-space:normal; }
+  .rule-bars { margin:0 0 5px; }
 
   /* -------- Numéro / date -------- */
-  .invoice-head { padding:6px 0 8px; grid-template-columns:1fr 220px; align-items:start; }
-  .invoice-head h2 { font-size:22px; margin:0; }
-  .meta-grid { background:none; border:0; padding:0; grid-template-columns:80px 1fr; }
-  .meta-grid label { color:var(--ink); font-size:11px; }
+  .invoice-head { padding:2px 0 4px; grid-template-columns:1fr 250px; align-items:start; gap:10px; }
+  .invoice-head h2 { font-size:19px; margin:0; }
+  .meta-grid { background:none; border:0; padding:0; grid-template-columns:66px 1fr; gap:4px 8px; }
+  .meta-grid label { color:var(--ink); font-size:10px; }
+  #invoiceNo { font-size:12px!important; letter-spacing:0!important; white-space:nowrap; }
 
-  .section-title { margin:8px 0 0; background:none!important; color:var(--ink)!important; padding:4px 0; border-bottom:2px solid var(--ink); border-radius:0; }
+  .section-title { margin:6px 0 0; background:none!important; color:var(--ink)!important; padding:3px 0; border-bottom:2px solid var(--ink); border-radius:0; font-size:11px; }
   input,select,textarea {
-    border:0; border-bottom:1px solid #d9dfe3; border-radius:0; padding:3px 2px; min-height:22px;
-    background:transparent!important; box-shadow:none!important; color:#111!important; font-weight:600;
+    border:0; border-bottom:1px solid #d9dfe3; border-radius:0; padding:2px; min-height:18px!important;
+    background:transparent!important; box-shadow:none!important; color:#111!important; font-weight:600; font-size:11px;
   }
   select { -webkit-appearance:none; appearance:none; background-image:none!important; }
   .auto-field { color:var(--brand-dark)!important; }
-  .patient { padding:10px 0 12px; grid-template-columns:110px 1fr 190px 1fr; }
+  .patient { padding:5px 0 7px; grid-template-columns:100px 1fr 170px 1fr; gap:5px 10px; }
+  .patient label { font-size:10.5px; }
 
-  /* -------- Tableau des prestations : grille complète, sans remplissage de couleur -------- */
-  .table-wrap { padding:6px 0 8px; }
+  /* -------- Tableau des prestations : compact pour tenir ~25 lignes sur une page,
+     grille complète, sans remplissage de couleur -------- */
+  .table-wrap { padding:4px 0 6px; }
   table { table-layout:fixed; border-collapse:collapse; border:1px solid #b9c2c8; }
-  .table-wrap table th:nth-child(1),.table-wrap table td:nth-child(1) { width:40%!important; }
+  .table-wrap table th:nth-child(1),.table-wrap table td:nth-child(1) { width:38%!important; }
   .table-wrap table th:nth-child(2),.table-wrap table td:nth-child(2) { width:10%!important; }
   .table-wrap table th:nth-child(3),.table-wrap table td:nth-child(3) { width:22%!important; }
-  .table-wrap table th:nth-child(4),.table-wrap table td:nth-child(4) { width:28%!important; }
-  th { background:#fff!important; color:var(--ink)!important; padding:7px 10px; font-size:10.5px; border:1px solid #b9c2c8; }
+  .table-wrap table th:nth-child(4),.table-wrap table td:nth-child(4) { width:30%!important; }
+  th { background:#fff!important; color:var(--ink)!important; padding:3px 6px; font-size:8.5px; border:1px solid #b9c2c8; }
   td { border:1px solid #b9c2c8; }
   tbody tr td { background:#fff!important; }
-  .money { font-size:13px!important; padding-right:4px!important; }
-  td input { min-height:24px; }
+  .money { font-size:10px!important; padding-right:4px!important; }
+  td input, td textarea { min-height:15px!important; padding:1px 3px!important; font-size:9.5px!important; }
+  textarea.descInput { min-height:15px!important; line-height:1.25!important; }
+  .qty-stepper { height:auto; }
+  .qty-stepper .qtyInput { min-height:15px!important; width:22px; flex-basis:22px; }
   .suggestions { display:none!important; }
 
   /* -------- Total -------- */
   .totals-card {
-    margin:10px 0 12px auto; width:300px; background:#fff!important;
+    margin:6px 0 8px; width:280px; background:#fff!important;
     border:1px solid #b9c2c8; border-radius:0;
   }
-  .totals-line { padding:7px 14px; font-size:11.5px; border-bottom:1px solid #b9c2c8; }
-  .totals-line select,.totals-line input { font-size:11.5px!important; min-height:auto!important; padding:2px 4px!important; }
-  .totals-line .tax-rate-input { width:34px!important; max-width:34px!important; }
-  .totals-line.grand-line { border-top:2px solid var(--brand); background:#fff!important; padding:10px 14px; }
-  .total-label { white-space:nowrap; letter-spacing:.3px; }
-  .total-value { font-size:18px!important; }
+  .totals-line { padding:3.5px 12px; font-size:10.5px; border-bottom:1px solid #b9c2c8; }
+  .totals-line select,.totals-line input { font-size:10.5px!important; min-height:auto!important; padding:2px 4px!important; }
+  .totals-line .tax-rate-input { width:30px!important; max-width:30px!important; }
+  .total-highlight { padding:4px 0 1px; }
+  .total-highlight-label { font-size:11px; letter-spacing:.3px; }
+  .total-highlight-value { font-size:22px!important; margin:2px 0 6px; }
 
-  .words { padding:2px 0 10px; }
-  .words-line { font-size:11px; }
-  .signatures { padding:14px 0 4px; gap:60px; }
+  .words-line { font-size:10.5px; }
+  .signatures { padding:5px 0 0; gap:50px; }
+  .signature-line { margin-top:16px; padding-top:4px; }
+  .footer-note { display:none!important; }
   #invoice::after { content:none; }
 
   tr.print-hide-empty { display:none!important; }
@@ -603,6 +620,11 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
         <tfoot><tr class="add-line-row"><td colspan="5"><button type="button" class="secondary add-line-btn" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Ajouter une ligne</span></button></td></tr></tfoot>
       </table>
     </section>
+    <div class="total-highlight">
+      <div class="total-highlight-label">Montant total</div>
+      <div class="total-highlight-value" id="grandTotal">0 FCFA</div>
+      <div class="words-line"><span class="words-label">Arrêter cette facture à la somme de :</span> <span id="words" class="words-value"></span></div>
+    </div>
       </div>
       <aside class="payment-panel">
     <div class="totals-card">
@@ -610,9 +632,6 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       <div class="totals-line tax-line">
         <span>Taxe (<input id="taxRate" type="number" class="tax-rate-input" min="0" max="100" step="0.1" value="0" inputmode="decimal">%)</span>
         <span id="taxAmountVal">0 FCFA</span>
-      </div>
-      <div class="totals-line grand-line">
-        <span class="total-label">Montant total</span><span class="total-value" id="grandTotal">0 FCFA</span>
       </div>
       <div class="totals-line">
         <span>Mode de paiement</span>
@@ -633,10 +652,6 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
       </aside>
     </div>
 
-    <section class="words">
-      <div class="words-line"><span class="words-label">Montant en lettres — Arrêter cette facture à la somme de :</span> <span id="words" class="words-value"></span></div>
-    </section>
-
     <section class="signatures">
       <div><div class="signature-line">Signature Patient(e)</div></div>
       <div><div class="signature-line">Signature Caissier(e)</div></div>
@@ -650,13 +665,18 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
   </main>
 
   <main class="sheet" id="releveView" style="display:none;margin-top:14px;">
-    <div class="section-title" style="margin-top:24px;">RELEVÉ DES FACTURES</div>
-    <div class="releve-summary">
-      <div class="stat"><span class="stat-label">Factures</span><span id="statCount">0</span></div>
-      <div class="stat stat-locked">
-        <span class="stat-label">Total cumulé</span>
-        <span id="statTotal">••••••</span>
-        <button type="button" class="ghost stat-reveal-btn" id="statTotalRevealBtn" title="Afficher (code responsable requis)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Afficher</span></button>
+    <div class="releve-header">
+      <div class="section-title" style="margin:0;">RELEVÉ DES FACTURES</div>
+      <div class="releve-summary">
+        <div class="stat">
+          <span class="stat-value" id="statCount">0</span>
+          <span class="stat-label">Factures</span>
+        </div>
+        <div class="stat stat-locked">
+          <span class="stat-value" id="statTotal">••••••</span>
+          <span class="stat-label">Total cumulé</span>
+          <button type="button" class="ghost stat-reveal-btn" id="statTotalRevealBtn" title="Afficher (code responsable requis)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Afficher</span></button>
+        </div>
       </div>
     </div>
     <div class="releve-toolbar">
@@ -667,7 +687,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
     </div>
     <div class="releve-wrap">
       <table class="releve-table">
-        <thead><tr><th>Date</th><th>N° Facture</th><th>Patient</th><th>Contact</th><th>Montant</th><th>Statut</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Date</th><th>N° Facture</th><th>Patient</th><th>Contact</th><th class="num">Montant</th><th>Statut</th><th class="actions-th">Actions</th></tr></thead>
         <tbody id="releveBody"></tbody>
       </table>
     </div>
@@ -994,9 +1014,44 @@ function subscribeCatalogRealtime() {
     .subscribe();
 }
 
+const CAT_PENDING_KEY = "cfl_pending_prestations_v1";
+function getCatPending() {
+  try { return JSON.parse(localStorage.getItem(CAT_PENDING_KEY) || "[]"); } catch(e) { return []; }
+}
+function setCatPending(list) { localStorage.setItem(CAT_PENDING_KEY, JSON.stringify(list)); }
+function queueCatPending(record) {
+  const list = getCatPending().filter(r => r.id !== record.id);
+  list.push(record);
+  setCatPending(list);
+}
+function unqueueCatPending(id) { setCatPending(getCatPending().filter(r => r.id !== id)); }
+
+async function flushCatPending() {
+  if (!sb || !navigator.onLine) return;
+  const list = getCatPending();
+  if (!list.length) return;
+  for (const record of list) {
+    const { error } = await sb.from("prestations").insert(record);
+    if (!error) unqueueCatPending(record.id);
+  }
+  if (getCatPending().length === 0 && list.length) showToast(list.length + " prestation(s) synchronisée(s) automatiquement.", "success");
+  await refreshCatalog();
+}
+
 async function addPrestation(name, price) {
-  if (!sb || !navigator.onLine) { showToast("Connexion requise pour modifier le catalogue.", "error"); return false; }
-  const { error } = await sb.from("prestations").insert({ id: uuid(), name: name, price: price, active: true });
+  // Ajout possible hors connexion : la prestation est disponible immédiatement pour
+  // facturer sur ce poste, et se synchronise automatiquement avec le catalogue partagé
+  // dès que la connexion revient (comme les factures en attente).
+  const record = { id: uuid(), name: name, price: price, active: true };
+  if (!sb || !navigator.onLine) {
+    queueCatPending(record);
+    CATALOG.push({ id: record.id, name: record.name, price: record.price });
+    saveCatalogCache();
+    if (typeof renderCatalogAdmin === "function") renderCatalogAdmin();
+    showToast("Prestation ajoutée sur cet appareil — sera synchronisée au retour de la connexion.", "info");
+    return true;
+  }
+  const { error } = await sb.from("prestations").insert(record);
   if (error) { showToast("Erreur lors de l'ajout.", "error"); return false; }
   showToast("Prestation ajoutée.", "success");
   await refreshCatalog();
@@ -1024,7 +1079,7 @@ let catSearchTerm = "";
 function renderCatalogAdmin() {
   const list = document.getElementById("catalogList");
   if (!list) return;
-  if (!sb || !navigator.onLine) { list.innerHTML = '<div class="catalog-empty">Connecte-toi à la base partagée pour gérer le catalogue.</div>'; return; }
+  if (!CATALOG.length) { list.innerHTML = '<div class="catalog-empty">Aucune prestation en mémoire sur cet appareil — connecte-toi une première fois pour charger le catalogue.</div>'; return; }
   const q = normalize(catSearchTerm);
   const items = (q ? CATALOG.filter(it => normalize(it.name).includes(q)) : CATALOG).slice(0, 200);
   if (!items.length) { list.innerHTML = '<div class="catalog-empty">Aucune prestation trouvée.</div>'; return; }
@@ -1090,6 +1145,7 @@ function initSupabase() {
       sb = window.supabase.createClient(cfg.url, cfg.key);
       subscribeRealtime();
       flushPending();
+      flushCatPending();
       refreshReleve();
       registerDevice();
       refreshCatalog();
@@ -1922,9 +1978,9 @@ function drawChart(canvasId, type, data, extraOptions) {
 // -------- Network status -------- (indicateurs techniques retirés de l'interface : le personnel
 // n'a plus besoin de les voir. La synchronisation continue de fonctionner normalement en arrière-plan.)
 function updateNetStatus() {}
-window.addEventListener("online", () => { updateNetStatus(); flushPending(); showToast("Connexion rétablie — synchronisation en cours.", "info"); });
+window.addEventListener("online", () => { updateNetStatus(); flushPending(); flushCatPending(); showToast("Connexion rétablie — synchronisation en cours.", "info"); });
 window.addEventListener("offline", () => { updateNetStatus(); showToast("Connexion perdue — les factures restent enregistrées sur cet appareil.", "error"); });
-setInterval(() => { flushPending(); updateNetStatus(); }, 30000);
+setInterval(() => { flushPending(); flushCatPending(); updateNetStatus(); }, 30000);
 
 // -------- Service worker (PWA) --------
 if ("serviceWorker" in navigator) {
