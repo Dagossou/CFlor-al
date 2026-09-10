@@ -761,7 +761,7 @@ td input:focus { box-shadow:inset 0 0 0 2px rgba(3,188,118,.25); background:#fff
         <li>Touchez <b>Émettre / Enregistrer la facture</b> pour l'ajouter au relevé partagé — la page revient ensuite à une facture vierge.</li>
         <li>Utilisez <b>Imprimer / PDF</b> pour imprimer ou enregistrer en PDF.</li>
         <li>Si la connexion Internet est coupée, la facture reste enregistrée sur cet appareil (badge « en attente ») puis se synchronise automatiquement au retour du réseau.</li>
-        <li>Dans le Relevé, une facture reste modifiable, supprimable ou peut être validée comme payée pendant 30 minutes après son émission.</li>
+        <li>Dans le Relevé, modifier, supprimer ou valider une facture comme payée demande le code d'accès responsable — sans ce code, une facture reste consultable mais pas modifiable.</li>
         <li>Sur une tablette ou un téléphone, utilisez le menu du navigateur → <b>Ajouter à l'écran d'accueil / Installer l'application</b> pour avoir une icône comme une vraie application.</li>
       </ol>
     </div>
@@ -1505,6 +1505,11 @@ document.getElementById("adminPinInput").addEventListener("keydown", e => { if (
 // -------- Emettre / Enregistrer --------
 let currentInvoicePaid = false;
 document.getElementById("emettreBtn").addEventListener("click", async () => {
+  const isEditingExisting = !!currentInvoiceId;
+  if (isEditingExisting && !adminUnlocked) {
+    const ok = await requestPin();
+    if (!ok) return;
+  }
   const s = state();
   if (!s.lines.length) { showToast("Ajoutez au moins une prestation avant d'émettre la facture.", "error"); return; }
   if (!s.id) s.id = uuid();
@@ -1665,9 +1670,7 @@ function renderReleve() {
     total += Number(r.total||0);
     const tr = document.createElement("tr");
     const isDemo = !!r._demo;
-    const createdMs = r.created_at ? new Date(r.created_at).getTime() : 0;
-    const withinEditWindow = createdMs > 0 && (Date.now() - createdMs) < 1800000;
-    const canManage = !isDemo && !r.paid && (r._pending || withinEditWindow);
+    const canManage = !isDemo && !r.paid;
     const statusLabel = isDemo ? "Démo" : (r.paid ? "Payée" : "Enregistrée");
     const statusClass = isDemo ? "demo" : (r.paid ? "paid" : "synced");
     let actionsHtml;
@@ -1692,9 +1695,15 @@ function renderReleve() {
     if (!isDemo) {
       tr.querySelector(".reopenBtn").addEventListener("click", () => reopenInvoice(r));
       const validateBtn = tr.querySelector(".validateBtn");
-      if (validateBtn) validateBtn.addEventListener("click", () => validateInvoicePaid(r));
+      if (validateBtn) validateBtn.addEventListener("click", async () => {
+        if (!adminUnlocked && !(await requestPin())) return;
+        validateInvoicePaid(r);
+      });
       const deleteBtn = tr.querySelector(".deleteBtn");
-      if (deleteBtn) deleteBtn.addEventListener("click", () => deleteInvoice(r));
+      if (deleteBtn) deleteBtn.addEventListener("click", async () => {
+        if (!adminUnlocked && !(await requestPin())) return;
+        deleteInvoice(r);
+      });
     }
     body.appendChild(tr);
   });
